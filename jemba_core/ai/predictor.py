@@ -1,33 +1,39 @@
-from pathlib import Path
+﻿from pathlib import Path
 import joblib
 import pandas as pd
+
+from jemba_core.ai.feature_selector import FEATURES
+from jemba_core.features.feature_engine import FeatureEngine
 
 
 class Predictor:
 
-    def __init__(self):
-        model_file = Path("models/trained/random_forest.pkl")
+    def __init__(self, model_path):
+        self.model = joblib.load(model_path)
 
-        if not model_file.exists():
-            raise FileNotFoundError(
-                f"No existe el modelo: {model_file}"
-            )
+    def predict(self, df):
 
-        self.model = joblib.load(model_file)
+        df = FeatureEngine.generate(df)
 
-    def predict(self, df: pd.DataFrame):
-        features = [
-            "EMA20",
-            "EMA50",
-            "ATR",
-            "BODY",
-            "BULLISH",
-            "BEARISH",
-        ]
+        df = df.dropna()
 
-        x = df[features]
+        last = df.iloc[[-1]]
 
-        return self.model.predict(x)
+        X = last[FEATURES]
 
-    def predict_last(self, df):
-        return self.predict(df)[-1]
+        prediction = int(self.model.predict(X)[0])
+
+        probabilities = self.model.predict_proba(X)[0]
+
+        sell_probability = float(probabilities[0])
+
+        buy_probability = float(probabilities[1])
+
+        confidence = max(buy_probability, sell_probability)
+
+        return {
+            "prediction": prediction,
+            "buy_probability": buy_probability,
+            "sell_probability": sell_probability,
+            "confidence": confidence
+        }
