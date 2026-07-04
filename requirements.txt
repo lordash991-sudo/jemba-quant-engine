@@ -1,0 +1,11 @@
+# ===========================
+# JEMBA QUANT ENGINE
+# Requirements Sprint 1
+# ===========================
+
+numpy
+pandas
+requests
+python-dotenv
+sqlalchemy
+loguru
