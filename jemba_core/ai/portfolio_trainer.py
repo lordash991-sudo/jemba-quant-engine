@@ -10,19 +10,10 @@ from jemba_core.database.sqlite_storage import SQLiteStorage
 from jemba_core.database.candle_repository import CandleRepository
 from jemba_core.features.feature_engine import FeatureEngine
 from jemba_core.ai.label_generator import LabelGenerator
+from jemba_core.ai.feature_selector import FEATURES
 
 
 class PortfolioTrainer:
-
-    EXCLUDE = [
-        "symbol",
-        "timeframe",
-        "timestamp",
-        "datetime",
-        "open_time",
-        "close_time",
-        "LABEL"
-    ]
 
     def __init__(self):
         self.storage = SQLiteStorage()
@@ -44,24 +35,15 @@ class PortfolioTrainer:
 
         return df
 
-    def feature_columns(self, df):
-        features = []
-
-        for col in df.columns:
-            if col in self.EXCLUDE:
-                continue
-
-            if pd.api.types.is_numeric_dtype(df[col]):
-                features.append(col)
-
-        return features
-
     def train_symbol(self, symbol):
         df = self.prepare_data(symbol)
 
-        features = self.feature_columns(df)
+        missing = [col for col in FEATURES if col not in df.columns]
 
-        X = df[features]
+        if missing:
+            raise ValueError(f"Faltan features en {symbol}: {missing}")
+
+        X = df[FEATURES]
         y = df["LABEL"]
 
         X_train, X_test, y_train, y_test = train_test_split(
@@ -93,7 +75,7 @@ class PortfolioTrainer:
         joblib.dump(model, model_path)
 
         importance = pd.DataFrame({
-            "feature": features,
+            "feature": FEATURES,
             "importance": model.feature_importances_
         }).sort_values("importance", ascending=False)
 
@@ -103,7 +85,7 @@ class PortfolioTrainer:
         return {
             "symbol": symbol,
             "rows": len(df),
-            "features": len(features),
+            "features": len(FEATURES),
             "accuracy": round(accuracy, 4),
             "f1_score": round(f1, 4),
             "model": str(model_path),
