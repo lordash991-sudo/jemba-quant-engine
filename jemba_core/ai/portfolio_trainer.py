@@ -14,13 +14,14 @@ from jemba_core.ai.label_generator import LabelGenerator
 
 class PortfolioTrainer:
 
-    FEATURES = [
-        "EMA20",
-        "EMA50",
-        "ATR",
-        "BODY",
-        "BULLISH",
-        "BEARISH",
+    EXCLUDE = [
+        "symbol",
+        "timeframe",
+        "timestamp",
+        "datetime",
+        "open_time",
+        "close_time",
+        "LABEL"
     ]
 
     def __init__(self):
@@ -36,23 +37,31 @@ class PortfolioTrainer:
     def prepare_data(self, symbol, timeframe="1h", limit=30000):
         df = self.repo.load_candles(symbol, timeframe, limit)
 
-        df["EMA20"] = FeatureEngine.ema(df, 20)
-        df["EMA50"] = FeatureEngine.ema(df, 50)
-        df["ATR"] = FeatureEngine.atr(df)
-        df["BODY"] = FeatureEngine.body(df)
-        df["BULLISH"] = FeatureEngine.bullish(df)
-        df["BEARISH"] = FeatureEngine.bearish(df)
-
+        df = FeatureEngine.generate(df)
         df = LabelGenerator.generate(df)
 
         df = df.dropna().reset_index(drop=True)
 
         return df
 
+    def feature_columns(self, df):
+        features = []
+
+        for col in df.columns:
+            if col in self.EXCLUDE:
+                continue
+
+            if pd.api.types.is_numeric_dtype(df[col]):
+                features.append(col)
+
+        return features
+
     def train_symbol(self, symbol):
         df = self.prepare_data(symbol)
 
-        X = df[self.FEATURES]
+        features = self.feature_columns(df)
+
+        X = df[features]
         y = df["LABEL"]
 
         X_train, X_test, y_train, y_test = train_test_split(
@@ -63,10 +72,12 @@ class PortfolioTrainer:
         )
 
         model = RandomForestClassifier(
-            n_estimators=300,
-            max_depth=10,
+            n_estimators=500,
+            max_depth=20,
+            min_samples_leaf=5,
             random_state=42,
-            n_jobs=-1
+            n_jobs=-1,
+            class_weight="balanced"
         )
 
         model.fit(X_train, y_train)
@@ -81,12 +92,22 @@ class PortfolioTrainer:
 
         joblib.dump(model, model_path)
 
+        importance = pd.DataFrame({
+            "feature": features,
+            "importance": model.feature_importances_
+        }).sort_values("importance", ascending=False)
+
+        importance_path = Path("models/trained") / f"{safe_symbol}_feature_importance.csv"
+        importance.to_csv(importance_path, index=False)
+
         return {
             "symbol": symbol,
             "rows": len(df),
+            "features": len(features),
             "accuracy": round(accuracy, 4),
             "f1_score": round(f1, 4),
-            "model": str(model_path)
+            "model": str(model_path),
+            "importance": str(importance_path)
         }
 
     def train_all(self):
