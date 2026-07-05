@@ -1,39 +1,22 @@
-﻿from pathlib import Path
-import joblib
+﻿import joblib
 import pandas as pd
-
-from jemba_core.ai.feature_selector import FEATURES
-from jemba_core.features.feature_engine import FeatureEngine
+from pathlib import Path
 
 
 class Predictor:
 
     def __init__(self, model_path):
-        self.model = joblib.load(model_path)
+        self.model_path = Path(model_path)
+        self.model = joblib.load(self.model_path)
 
-    def predict(self, df):
+    def predict(self, features: pd.DataFrame):
 
-        df = FeatureEngine.generate(df)
+        probabilities = self.model.predict_proba(features)[0]
 
-        df = df.dropna()
-
-        last = df.iloc[[-1]]
-
-        X = last[FEATURES]
-
-        prediction = int(self.model.predict(X)[0])
-
-        probabilities = self.model.predict_proba(X)[0]
-
-        sell_probability = float(probabilities[0])
-
-        buy_probability = float(probabilities[1])
-
-        confidence = max(buy_probability, sell_probability)
+        prediction = self.model.predict(features)[0]
 
         return {
-            "prediction": prediction,
-            "buy_probability": buy_probability,
-            "sell_probability": sell_probability,
-            "confidence": confidence
+            "prediction": int(prediction),
+            "buy_probability": float(probabilities[1]),
+            "sell_probability": float(probabilities[0]),
         }
