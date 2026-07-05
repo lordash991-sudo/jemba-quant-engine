@@ -1,7 +1,12 @@
 ﻿import pandas as pd
 
+from jemba_core.events.event_bus import EventBus
+from jemba_core.events.feature_generated_event import FeatureGeneratedEvent
+
 
 class FeatureEngine:
+
+    _bus = EventBus()
 
     @staticmethod
     def ema(df, period):
@@ -149,5 +154,16 @@ class FeatureEngine:
 
         df["EMA20_GT_EMA50"] = (df["EMA20"] > df["EMA50"]).astype(int)
         df["EMA50_GT_EMA200"] = (df["EMA50"] > df["EMA200"]).astype(int)
+
+        FeatureEngine._bus.publish(
+            FeatureGeneratedEvent(
+                source="FeatureEngine",
+                symbol=df.attrs.get("symbol", "UNKNOWN"),
+                timeframe=df.attrs.get("timeframe", "UNKNOWN"),
+                rows=len(df),
+                columns=len(df.columns),
+                last_close=float(df.iloc[-1]["close"]),
+            )
+        )
 
         return df
