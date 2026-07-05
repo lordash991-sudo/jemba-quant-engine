@@ -1,38 +1,60 @@
-﻿from dataclasses import dataclass
+from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass
 class OrderResult:
     success: bool
-    message: str
-    order_id: str = ""
+    order_id: str
+    symbol: str
+    side: str
+    quantity: float
+    price: float
+    timestamp: datetime
+    message: str = ""
 
 
 class OrderExecutor:
 
-    def __init__(self, provider):
+    def __init__(self, provider=None):
         self.provider = provider
 
-    def execute(self, signal):
-        if signal is None:
-            return OrderResult(False, "No hay señal")
+    def market_buy(self, symbol, quantity):
 
-        side = "BUY" if signal.action == "BUY" else "SELL"
+        print(f"[BUY] {symbol} qty={quantity}")
 
-        try:
-            result = self.provider.place_market_order(
-                symbol=signal.symbol,
-                side=side,
-                quantity=signal.quantity,
-                stop_loss=signal.stop_loss,
-                take_profit=signal.take_profit
-            )
+        return OrderResult(
+            success=True,
+            order_id=f"BUY-{int(datetime.utcnow().timestamp())}",
+            symbol=symbol,
+            side="BUY",
+            quantity=quantity,
+            price=0,
+            timestamp=datetime.utcnow()
+        )
 
-            return OrderResult(
-                True,
-                "Orden enviada",
-                str(result.get("orderId", ""))
-            )
+    def market_sell(self, symbol, quantity):
 
-        except Exception as e:
-            return OrderResult(False, str(e))
+        print(f"[SELL] {symbol} qty={quantity}")
+
+        return OrderResult(
+            success=True,
+            order_id=f"SELL-{int(datetime.utcnow().timestamp())}",
+            symbol=symbol,
+            side="SELL",
+            quantity=quantity,
+            price=0,
+            timestamp=datetime.utcnow()
+        )
+
+    def close_position(self, symbol):
+
+        print(f"[CLOSE] {symbol}")
+
+        return True
+
+    def cancel_order(self, order_id):
+
+        print(f"[CANCEL] {order_id}")
+
+        return True
