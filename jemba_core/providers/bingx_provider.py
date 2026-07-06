@@ -1,93 +1,46 @@
-from datetime import datetime, timezone
-from typing import List
-
-import requests
-
-from jemba_core.common.candle import Candle
-from jemba_core.interfaces.market_provider import MarketProvider
+﻿import requests
 
 
-class BingXProvider(MarketProvider):
+class BingXProvider:
+
     BASE_URL = "https://open-api.bingx.com"
 
-    def get_candles(self, symbol: str, timeframe: str, limit: int = 500) -> List[Candle]:
-        endpoint = "/openApi/swap/v3/quote/klines"
+    def __init__(self, timeout=10):
+        self.timeout = timeout
 
-        params = {
-            "symbol": symbol,
-            "interval": timeframe,
-            "limit": limit,
-        }
-
-        response = requests.get(
-            self.BASE_URL + endpoint,
-            params=params,
-            timeout=15,
+    def ping(self):
+        r = requests.get(
+            self.BASE_URL + "/openApi/swap/v2/server/time",
+            timeout=self.timeout,
         )
+        return r.status_code == 200
 
-        response.raise_for_status()
-        payload = response.json()
-
-        if payload.get("code") != 0:
-            raise RuntimeError(f"BingX error: {payload}")
-
-        raw_candles = payload.get("data", [])
-
-        candles: List[Candle] = []
-
-        for item in raw_candles:
-            candles.append(
-                Candle(
-                    symbol=symbol,
-                    timeframe=timeframe,
-                    timestamp=datetime.fromtimestamp(int(item["time"]) / 1000, tz=timezone.utc),
-                    open=float(item["open"]),
-                    high=float(item["high"]),
-                    low=float(item["low"]),
-                    close=float(item["close"]),
-                    volume=float(item["volume"]),
-                )
-            )
-
-        candles.sort(key=lambda candle: candle.timestamp)
-
-        return candles
-
-    def get_latest_price(self, symbol: str) -> float:
-        endpoint = "/openApi/swap/v2/quote/price"
-
-        params = {
-            "symbol": symbol,
-        }
-
-        response = requests.get(
-            self.BASE_URL + endpoint,
-            params=params,
-            timeout=15,
+    def get_price(self, symbol):
+        r = requests.get(
+            self.BASE_URL + "/openApi/swap/v2/quote/price",
+            params={"symbol": symbol},
+            timeout=self.timeout,
         )
+        r.raise_for_status()
+        return r.json()
 
-        response.raise_for_status()
-        payload = response.json()
-
-        if payload.get("code") != 0:
-            raise RuntimeError(f"BingX error: {payload}")
-
-        data = payload.get("data", {})
-        return float(data["price"])
-
-    def get_symbols(self) -> List[str]:
-        endpoint = "/openApi/swap/v2/quote/contracts"
-
-        response = requests.get(
-            self.BASE_URL + endpoint,
-            timeout=15,
+    def get_candles(self, symbol, timeframe, limit=500):
+        r = requests.get(
+            self.BASE_URL + "/openApi/swap/v3/quote/klines",
+            params={
+                "symbol": symbol,
+                "interval": timeframe,
+                "limit": limit,
+            },
+            timeout=self.timeout,
         )
+        r.raise_for_status()
+        return r.json()
 
-        response.raise_for_status()
-        payload = response.json()
+    def get_latest(self, symbol, timeframe):
+        data = self.get_candles(symbol, timeframe, limit=1)
 
-        if payload.get("code") != 0:
-            raise RuntimeError(f"BingX error: {payload}")
+        if not data:
+            return None
 
-        data = payload.get("data", [])
-        return [item["symbol"] for item in data if "symbol" in item]
+        return data[-1]
