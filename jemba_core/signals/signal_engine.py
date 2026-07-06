@@ -1,5 +1,7 @@
 ﻿from dataclasses import dataclass
 
+from jemba_core.events.trade_signal_event import TradeSignalEvent
+
 
 @dataclass
 class TradeSignal:
@@ -45,4 +47,17 @@ class SignalEngine:
             stop_loss=stop_loss,
             take_profit=take_profit,
             confidence=confidence,
+        )
+
+    def to_event(self, signal: TradeSignal):
+        return TradeSignalEvent(
+            source="SignalEngine",
+            symbol=signal.symbol,
+            timeframe=signal.timeframe,
+            side=signal.action,
+            entry=signal.entry,
+            stop_loss=signal.stop_loss,
+            take_profit=signal.take_profit,
+            confidence=signal.confidence,
+            strategy=signal.strategy,
         )
