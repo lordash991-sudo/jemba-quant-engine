@@ -1,45 +1,61 @@
-﻿from sqlalchemy import text
+﻿class MarketUpdater:
 
-from jemba_core.providers.bingx_updater import BingXUpdater
-from jemba_core.database.sqlite_storage import SQLiteStorage
+    def __init__(
+        self,
+        market_provider=None,
+        candle_repository=None,
+        event_bus=None,
+        scheduler=None,
+        symbols=None,
+        timeframe="1h",
+    ):
+        self.market_provider = market_provider
+        self.candle_repository = candle_repository
+        self.event_bus = event_bus
+        self.scheduler = scheduler
+        self.symbols = symbols or []
+        self.timeframe = timeframe
 
+    def update_symbol(self, symbol, timeframe=None):
+        timeframe = timeframe or self.timeframe
 
-class MarketUpdater:
-
-    def __init__(self):
-        self.provider = BingXUpdater()
-        self.storage = SQLiteStorage()
-
-    def candle_exists(self, candle):
-        query = text("""
-            SELECT COUNT(*)
-            FROM candles
-            WHERE symbol = :symbol
-              AND timeframe = :timeframe
-              AND timestamp = :timestamp
-        """)
-
-        with self.storage.engine.begin() as conn:
-            result = conn.execute(
-                query,
-                {
-                    "symbol": candle.symbol,
-                    "timeframe": candle.timeframe,
-                    "timestamp": candle.timestamp.isoformat()
-                }
+        try:
+            candle = self.market_provider.get_latest(
+                symbol=symbol,
+                timeframe=timeframe,
             )
 
-            return result.scalar() > 0
+            if candle is None:
+                return False
 
-    def update(self, symbol="BTC-USDT", timeframe="1h"):
-        candle = self.provider.latest_closed_candle(symbol, timeframe)
+            saved = self.candle_repository.save(candle)
 
-        if candle is None:
+            if self.event_bus is not None:
+                self.event_bus.publish({
+                    "event_type": "MarketUpdated",
+                    "symbol": symbol,
+                    "timeframe": timeframe,
+                    "candle": candle,
+                })
+
+            return bool(saved)
+
+        except Exception:
             return False
 
-        if self.candle_exists(candle):
-            return False
+    def update_all(self, symbols=None, timeframe=None):
+        symbols = symbols or self.symbols
+        results = {}
 
-        inserted = self.storage.save_candles([candle])
+        for symbol in symbols:
+            results[symbol] = self.update_symbol(symbol, timeframe)
 
-        return inserted > 0
+        return results
+
+    def run_once(self):
+        return self.update_all()
+
+    def run(self):
+        while self.scheduler.should_continue():
+            self.run_once()
+            self.scheduler.sleep()
