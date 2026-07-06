@@ -1,42 +1,48 @@
-import time
-from datetime import datetime
-
-from jemba_core.engine.market_updater import MarketUpdater
-from jemba_core.engine.live_engine import LiveEngine
+﻿import time
+from datetime import datetime, UTC
 
 
 class Scheduler:
 
-    def __init__(self):
+    def __init__(
+        self,
+        interval_seconds: int = 60,
+        max_cycles: int | None = None,
+    ):
+        self.interval_seconds = int(interval_seconds)
+        self.max_cycles = max_cycles
+        self.running = False
+        self.cycles_executed = 0
+        self.last_run_at = None
 
-        self.market = MarketUpdater()
+    def run_once(self, task, *args, **kwargs):
+        self.last_run_at = datetime.now(UTC)
+        self.cycles_executed += 1
 
-        self.engine = LiveEngine()
+        return task(*args, **kwargs)
 
-    def cycle(self, symbol="BTC-USDT", timeframe="1h"):
+    def run_forever(self, task, *args, **kwargs):
+        self.running = True
 
-        print("=" * 60)
+        while self.running:
+            self.run_once(task, *args, **kwargs)
 
-        print(datetime.utcnow())
+            if (
+                self.max_cycles is not None
+                and self.cycles_executed >= self.max_cycles
+            ):
+                self.stop()
+                break
 
-        print("ACTUALIZANDO MERCADO...")
+            time.sleep(self.interval_seconds)
 
-        updated = self.market.update(symbol, timeframe)
+    def stop(self):
+        self.running = False
 
-        print("UPDATED:", updated)
-
-        print()
-
-        print("EJECUTANDO LIVE ENGINE")
-
-        self.engine.cycle()
-
-        print("=" * 60)
-
-    def run(self, symbol="BTC-USDT", timeframe="1h", seconds=60):
-
-        while True:
-
-            self.cycle(symbol, timeframe)
-
-            time.sleep(seconds)
+    def summary(self):
+        return {
+            "running": self.running,
+            "cycles_executed": self.cycles_executed,
+            "interval_seconds": self.interval_seconds,
+            "last_run_at": self.last_run_at,
+        }
