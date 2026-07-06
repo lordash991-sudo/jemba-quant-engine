@@ -1,0 +1,632 @@
+﻿===== quant_orchestrator.py =====
+from jemba_core.signals.signal_ranker import SignalRanker
+
+
+class QuantOrchestrator:
+
+    def __init__(
+        self,
+        account_balance=10000,
+        min_confidence=0.70
+    ):
+
+        self.account_balance = account_balance
+        self.min_confidence = min_confidence
+
+        self.ranking_engine = SignalRanker()
+
+    def scan(self, symbols, timeframe="1h"):
+
+        """
+        Aquí posteriormente se conectará SignalEngine.
+        Por ahora devolvemos una lista vacía.
+        """
+
+        return []
+
+    def best_opportunity(
+        self,
+        symbols,
+        timeframe="1h"
+    ):
+
+        signals = self.scan(symbols, timeframe)
+
+        if not signals:
+            return None
+
+        ranked = self.ranking_engine.rank(signals)
+
+        if not ranked:
+            return None
+
+        return ranked[0]
+
+===== scheduler.py =====
+import time
+from datetime import datetime, UTC
+
+
+class Scheduler:
+
+    def __init__(
+        self,
+        interval_seconds: int = 60,
+        max_cycles: int | None = None,
+    ):
+        self.interval_seconds = int(interval_seconds)
+        self.max_cycles = max_cycles
+        self.running = False
+        self.cycles_executed = 0
+        self.last_run_at = None
+
+    def run_once(self, task, *args, **kwargs):
+        self.last_run_at = datetime.now(UTC)
+        self.cycles_executed += 1
+
+        return task(*args, **kwargs)
+
+    def run_forever(self, task, *args, **kwargs):
+        self.running = True
+
+        while self.running:
+            self.run_once(task, *args, **kwargs)
+
+            if (
+                self.max_cycles is not None
+                and self.cycles_executed >= self.max_cycles
+            ):
+                self.stop()
+                break
+
+            time.sleep(self.interval_seconds)
+
+    def stop(self):
+        self.running = False
+
+    def summary(self):
+        return {
+            "running": self.running,
+            "cycles_executed": self.cycles_executed,
+            "interval_seconds": self.interval_seconds,
+            "last_run_at": self.last_run_at,
+        }
+
+
+===== live_engine.py =====
+import time
+
+from jemba_core.engine.quant_orchestrator import QuantOrchestrator
+from jemba_core.execution.trade_engine import TradeEngine
+from jemba_core.portfolio.portfolio_manager import PortfolioManager
+from jemba_core.risk.risk_engine import RiskEngine
+
+from jemba_core.events.event_bus import EventBus
+from jemba_core.events.prediction_event import PredictionEvent
+from jemba_core.events.risk_event import RiskEvent
+from jemba_core.events.trade_signal_event import TradeSignalEvent
+
+
+class LiveEngine:
+
+    def __init__(self):
+        self.event_bus = EventBus()
+
+        self.symbols = [
+            "BTC-USDT",
+            "ETH-USDT",
+            "SOL-USDT",
+            "DOGE-USDT",
+            "LINK-USDT",
+            "XRP-USDT",
+            "SUI-USDT",
+            "PEPE-USDT",
+            "BNB-USDT",
+            "LTC-USDT",
+            "ADA-USDT",
+            "AVAX-USDT",
+            "AAVE-USDT",
+        ]
+
+        self.portfolio = PortfolioManager(
+            account_balance=10000,
+            risk_per_trade=0.01,
+        )
+
+        self.trade_engine = TradeEngine(self.portfolio)
+        self.risk_engine = RiskEngine()
+
+        self.quant = QuantOrchestrator(
+            account_balance=10000,
+            min_confidence=0.70,
+        )
+
+    def cycle(self):
+        best = self.quant.best_opportunity(self.symbols)
+
+        if best is None:
+            print("No hay señales.")
+            return None
+
+        print()
+        print("=" * 60)
+        print("MEJOR ACTIVO")
+        print(best)
+
+        action = best.get("action", "HOLD")
+        symbol = best.get("symbol", "UNKNOWN")
+        timeframe = best.get("timeframe", "1h")
+        confidence = float(best.get("confidence", 0.0))
+        buy_probability = float(best.get("buy_probability", 0.0))
+        sell_probability = float(best.get("sell_probability", 0.0))
+
+        prediction_event = PredictionEvent(
+            source="LiveEngine",
+            symbol=symbol,
+            timeframe=timeframe,
+            action=action,
+            confidence=confidence,
+            probability=max(buy_probability, sell_probability),
+            model="RandomForest",
+            metadata={
+                "buy_probability": buy_probability,
+                "sell_probability": sell_probability,
+                "raw": best,
+            },
+        )
+
+        self.event_bus.publish(prediction_event)
+
+        validation = self.risk_engine.validate(
+            portfolio=self.portfolio,
+            confidence=confidence,
+            position_size=1,
+            has_open_position=not self.trade_engine.can_open_trade(),
+        )
+
+        print()
+        print("RIESGO")
+        print(validation)
+
+        risk_event = RiskEvent(
+            source="LiveEngine",
+            approved=bool(validation.get("approved", False)),
+            reason=",".join(validation.get("reasons", [])),
+            risk_percent=float(self.portfolio.risk_per_trade),
+            drawdown=0.0,
+            consecutive_losses=0,
+            metadata=validation,
+        )
+
+        self.event_bus.publish(risk_event)
+
+        if not validation.get("approved", False):
+            print()
+            print("OPERACION BLOQUEADA")
+            return {
+                "prediction": prediction_event,
+                "risk": risk_event,
+                "trade_signal": None,
+            }
+
+        if action not in ["BUY", "SELL"]:
+            print()
+            print("SIN OPERACION: accion HOLD")
+            return {
+                "prediction": prediction_event,
+                "risk": risk_event,
+                "trade_signal": None,
+            }
+
+        trade_signal = TradeSignalEvent(
+            source="LiveEngine",
+            symbol=symbol,
+            timeframe=timeframe,
+            side=action,
+            entry=float(best.get("entry", best.get("price", best.get("close", 0.0)))),
+            stop_loss=float(best.get("stop_loss", best.get("sl", 0.0))),
+            take_profit=float(best.get("take_profit", best.get("tp", 0.0))),
+            confidence=confidence,
+            strategy="JEMBA_AI_V1",
+            metadata=best,
+        )
+
+        self.event_bus.publish(trade_signal)
+
+        print()
+        print("TRADE SIGNAL PUBLICADO")
+        print(vars(trade_signal))
+
+        return {
+            "prediction": prediction_event,
+            "risk": risk_event,
+            "trade_signal": trade_signal,
+        }
+
+    def run(self):
+        while True:
+            self.cycle()
+
+            print()
+            print("Esperando siguiente ciclo...")
+
+            time.sleep(60)
+
+
+===== predictor_service.py =====
+from pathlib import Path
+
+from jemba_core.ai.predictor import Predictor
+from jemba_core.events.prediction_event import PredictionEvent
+
+
+class PredictorService:
+
+    def __init__(self, model_dir="models/trained"):
+        self.model_dir = Path(model_dir)
+        self.predictors = {}
+
+    def _model_path(self, symbol: str):
+        clean_symbol = symbol.replace("-", "")
+        return self.model_dir / f"{clean_symbol}_random_forest.pkl"
+
+    def get_predictor(self, symbol: str):
+        if symbol not in self.predictors:
+            self.predictors[symbol] = Predictor(self._model_path(symbol))
+
+        return self.predictors[symbol]
+
+    def predict(self, symbol: str, timeframe: str, features):
+        predictor = self.get_predictor(symbol)
+        result = predictor.predict(features)
+
+        buy_probability = result["buy_probability"]
+        sell_probability = result["sell_probability"]
+
+        if buy_probability >= sell_probability:
+            action = "BUY"
+            confidence = buy_probability
+            probability = buy_probability
+        else:
+            action = "SELL"
+            confidence = sell_probability
+            probability = sell_probability
+
+        return PredictionEvent(
+            source="PredictorService",
+            symbol=symbol,
+            timeframe=timeframe,
+            action=action,
+            confidence=confidence,
+            probability=probability,
+            model="RandomForest",
+            metadata={
+                "buy_probability": buy_probability,
+                "sell_probability": sell_probability,
+                "raw_prediction": result["prediction"],
+            },
+        )
+
+
+===== confidence_engine.py =====
+from dataclasses import dataclass
+
+
+@dataclass
+class ConfidenceBreakdown:
+    ai: float
+    trend: float
+    volatility: float
+    momentum: float
+
+    @property
+    def score(self):
+        return round(
+            self.ai * 0.40
+            + self.trend * 0.25
+            + self.volatility * 0.15
+            + self.momentum * 0.20,
+            4,
+        )
+
+
+class ConfidenceEngine:
+
+    def calculate(
+        self,
+        ai_probability: float,
+        trend_score: float,
+        volatility_score: float,
+        momentum_score: float,
+    ):
+
+        breakdown = ConfidenceBreakdown(
+            ai=max(0, min(ai_probability, 1)),
+            trend=max(0, min(trend_score, 1)),
+            volatility=max(0, min(volatility_score, 1)),
+            momentum=max(0, min(momentum_score, 1)),
+        )
+
+        return breakdown
+
+===== signal_engine.py =====
+from dataclasses import dataclass
+
+from jemba_core.events.trade_signal_event import TradeSignalEvent
+
+
+@dataclass
+class TradeSignal:
+    symbol: str
+    timeframe: str
+    action: str
+    entry: float
+    stop_loss: float
+    take_profit: float
+    confidence: float
+    strategy: str = "JEMBA_AI_V1"
+
+
+class SignalEngine:
+
+    def generate_signal(
+        self,
+        symbol: str,
+        timeframe: str,
+        action: str,
+        entry: float,
+        confidence: float,
+        atr: float = 0.0,
+    ):
+        if action not in ["BUY", "SELL"]:
+            return None
+
+        if atr <= 0:
+            atr = entry * 0.01
+
+        if action == "BUY":
+            stop_loss = entry - atr
+            take_profit = entry + (atr * 2)
+        else:
+            stop_loss = entry + atr
+            take_profit = entry - (atr * 2)
+
+        return TradeSignal(
+            symbol=symbol,
+            timeframe=timeframe,
+            action=action,
+            entry=entry,
+            stop_loss=stop_loss,
+            take_profit=take_profit,
+            confidence=confidence,
+        )
+
+    def to_event(self, signal: TradeSignal):
+        return TradeSignalEvent(
+            source="SignalEngine",
+            symbol=signal.symbol,
+            timeframe=signal.timeframe,
+            side=signal.action,
+            entry=signal.entry,
+            stop_loss=signal.stop_loss,
+            take_profit=signal.take_profit,
+            confidence=signal.confidence,
+            strategy=signal.strategy,
+        )
+
+
+===== signal_ranker.py =====
+from dataclasses import dataclass
+
+
+@dataclass
+class RankedSignal:
+    symbol: str
+    confidence: float
+    signal: object = None
+
+
+class SignalRanker:
+
+    def rank(self, signals):
+
+        valid = [
+            s for s in signals
+            if s is not None
+        ]
+
+        valid.sort(
+            key=lambda x: x.confidence,
+            reverse=True
+        )
+
+        return valid
+
+    def best(self, signals):
+
+        ranked = self.rank(signals)
+
+        if not ranked:
+            return None
+
+        return ranked[0]
+
+
+===== paper_engine.py =====
+from jemba_core.paper.paper_account import PaperAccount
+from jemba_core.paper.paper_position import PaperPosition
+
+
+class PaperEngine:
+
+    def __init__(self, account=None):
+
+        self.account = account or PaperAccount()
+
+        self.positions = []
+
+        self.closed_positions = []
+
+    def open_position(self, position: PaperPosition):
+
+        self.positions.append(position)
+
+        return position
+
+    def has_open_position(self, symbol):
+
+        return any(
+            p.symbol == symbol and p.status == "OPEN"
+            for p in self.positions
+        )
+
+    def close_position(
+        self,
+        position: PaperPosition,
+        exit_price: float,
+    ):
+
+        commission = self.account.calculate_commission(
+            position.quantity * exit_price
+        )
+
+        pnl = position.close(
+            exit_price,
+            commission
+        )
+
+        self.account.apply_trade_result(
+            pnl,
+            commission=0
+        )
+
+        self.closed_positions.append(position)
+
+        return pnl
+
+    def summary(self):
+
+        return {
+
+            "open_positions": len(
+
+                [
+
+                    p
+
+                    for p in self.positions
+
+                    if p.status == "OPEN"
+
+                ]
+
+            ),
+
+            "closed_positions": len(
+
+                self.closed_positions
+
+            ),
+
+            "account": self.account.summary()
+
+        }
+
+
+===== risk_engine.py =====
+class RiskEngine:
+
+    def __init__(
+        self,
+        min_confidence: float = 0.70,
+        max_daily_drawdown: float = 0.05,
+        max_consecutive_losses: int = 3,
+    ):
+        self.min_confidence = float(min_confidence)
+        self.max_daily_drawdown = float(max_daily_drawdown)
+        self.max_consecutive_losses = int(max_consecutive_losses)
+
+    def validate(
+        self,
+        portfolio,
+        confidence: float,
+        position_size: float,
+        has_open_position: bool = False,
+        consecutive_losses: int = 0,
+        daily_drawdown: float = 0.0,
+    ):
+        reasons = []
+
+        if confidence < self.min_confidence:
+            reasons.append("LOW_CONFIDENCE")
+
+        if consecutive_losses >= self.max_consecutive_losses:
+            reasons.append("MAX_CONSECUTIVE_LOSSES")
+
+        if daily_drawdown >= self.max_daily_drawdown:
+            reasons.append("MAX_DAILY_DRAWDOWN")
+
+        if has_open_position:
+            reasons.append("POSITION_ALREADY_OPEN")
+
+        if position_size <= 0:
+            reasons.append("INVALID_POSITION_SIZE")
+
+        return {
+            "approved": len(reasons) == 0,
+            "reasons": reasons,
+        }
+
+
+===== portfolio_manager.py =====
+class PortfolioManager:
+
+    def __init__(
+        self,
+        account_balance: float = 10000.0,
+        risk_per_trade: float = 0.01,
+        max_positions: int = 1,
+    ):
+        self.account_balance = float(account_balance)
+        self.risk_per_trade = float(risk_per_trade)
+        self.max_positions = int(max_positions)
+        self.open_positions = []
+
+    @property
+    def risk_amount(self):
+        return self.account_balance * self.risk_per_trade
+
+    def can_open_position(self):
+        return len(self.open_positions) < self.max_positions
+
+    def calculate_position_size(self, entry: float, stop_loss: float):
+        risk_per_unit = abs(float(entry) - float(stop_loss))
+
+        if risk_per_unit <= 0:
+            return 0.0
+
+        return round(self.risk_amount / risk_per_unit, 6)
+
+    def register_position(self, position: dict):
+        if not self.can_open_position():
+            return False
+
+        self.open_positions.append(position)
+        return True
+
+    def close_position(self, pnl: float):
+        if self.open_positions:
+            self.open_positions.pop(0)
+
+        self.account_balance += float(pnl)
+        return self.account_balance
+
+    def summary(self):
+        return {
+            "balance": round(self.account_balance, 2),
+            "risk_per_trade": self.risk_per_trade,
+            "risk_amount": round(self.risk_amount, 2),
+            "open_positions": len(self.open_positions),
+            "max_positions": self.max_positions,
+        }
+
