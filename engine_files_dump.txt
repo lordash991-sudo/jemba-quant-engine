@@ -1,0 +1,351 @@
+﻿===== live_engine.py =====
+import time
+
+from jemba_core.engine.quant_orchestrator import QuantOrchestrator
+from jemba_core.execution.trade_engine import TradeEngine
+from jemba_core.portfolio.portfolio_manager import PortfolioManager
+from jemba_core.risk.risk_engine import RiskEngine
+
+
+class LiveEngine:
+
+    def __init__(self):
+
+        self.symbols = [
+            "BTC-USDT",
+            "ETH-USDT",
+            "SOL-USDT",
+            "DOGE-USDT",
+            "LINK-USDT",
+            "XRP-USDT",
+            "SUI-USDT",
+            "PEPE-USDT",
+            "BNB-USDT",
+            "LTC-USDT",
+            "ADA-USDT",
+            "AVAX-USDT",
+            "AAVE-USDT"
+        ]
+
+        self.portfolio = PortfolioManager(
+            account_balance=10000,
+            risk_per_trade=0.01
+        )
+
+        self.trade_engine = TradeEngine(
+            self.portfolio
+        )
+
+        self.risk_engine = RiskEngine()
+
+        self.quant = QuantOrchestrator(
+            account_balance=10000,
+            min_confidence=0.70
+        )
+
+    def cycle(self):
+
+        best = self.quant.best_opportunity(self.symbols)
+
+        if best is None:
+            print("No hay señales.")
+            return
+
+        print()
+
+        print("="*60)
+
+        print("MEJOR ACTIVO")
+
+        print(best)
+
+        validation = self.risk_engine.validate(
+            portfolio=self.portfolio,
+            confidence=best["confidence"],
+            position_size=1,
+            has_open_position=not self.trade_engine.can_open_trade()
+        )
+
+        print()
+
+        print("RIESGO")
+
+        print(validation)
+
+        if not validation["approved"]:
+
+            print()
+
+            print("OPERACION BLOQUEADA")
+
+            return
+
+        print()
+
+        print("OPERACION APROBADA")
+
+    def run(self):
+
+        while True:
+
+            self.cycle()
+
+            print()
+
+            print("Esperando siguiente ciclo...")
+
+            time.sleep(60)
+
+===== trade_engine.py =====
+from dataclasses import dataclass
+from datetime import datetime
+
+
+@dataclass
+class Trade:
+
+    symbol: str
+    side: str
+    entry: float
+    stop_loss: float
+    take_profit: float
+    quantity: float
+    confidence: float
+    opened_at: datetime
+    status: str = "OPEN"
+
+
+class TradeEngine:
+
+    def __init__(self, portfolio):
+
+        self.portfolio = portfolio
+        self.current_trade = None
+
+    def can_open_trade(self):
+
+        return (
+            self.current_trade is None
+            and self.portfolio.can_open_position()
+        )
+
+    def create_trade(
+        self,
+        symbol,
+        side,
+        entry,
+        stop_loss,
+        take_profit,
+        confidence
+    ):
+
+        if not self.can_open_trade():
+            return None
+
+        quantity = self.portfolio.calculate_position_size(
+            entry,
+            stop_loss
+        )
+
+        trade = Trade(
+            symbol=symbol,
+            side=side,
+            entry=entry,
+            stop_loss=stop_loss,
+            take_profit=take_profit,
+            quantity=quantity,
+            confidence=confidence,
+            opened_at=datetime.utcnow()
+        )
+
+        self.current_trade = trade
+
+        self.portfolio.register_position(
+            {
+                "symbol": symbol,
+                "side": side
+            }
+        )
+
+        return trade
+
+    def close_trade(self, pnl):
+
+        if self.current_trade is None:
+            return
+
+        self.current_trade.status = "CLOSED"
+
+        self.portfolio.close_position(pnl)
+
+        self.current_trade = None
+
+    def summary(self):
+
+        if self.current_trade is None:
+            return {
+                "status": "NO_POSITION"
+            }
+
+        return vars(self.current_trade)
+
+===== order_executor.py =====
+from dataclasses import dataclass
+from datetime import datetime
+
+
+@dataclass
+class OrderResult:
+    success: bool
+    order_id: str
+    symbol: str
+    side: str
+    quantity: float
+    price: float
+    timestamp: datetime
+    message: str = ""
+
+
+class OrderExecutor:
+
+    def __init__(self, provider=None):
+        self.provider = provider
+
+    def market_buy(self, symbol, quantity):
+
+        print(f"[BUY] {symbol} qty={quantity}")
+
+        return OrderResult(
+            success=True,
+            order_id=f"BUY-{int(datetime.utcnow().timestamp())}",
+            symbol=symbol,
+            side="BUY",
+            quantity=quantity,
+            price=0,
+            timestamp=datetime.utcnow()
+        )
+
+    def market_sell(self, symbol, quantity):
+
+        print(f"[SELL] {symbol} qty={quantity}")
+
+        return OrderResult(
+            success=True,
+            order_id=f"SELL-{int(datetime.utcnow().timestamp())}",
+            symbol=symbol,
+            side="SELL",
+            quantity=quantity,
+            price=0,
+            timestamp=datetime.utcnow()
+        )
+
+    def close_position(self, symbol):
+
+        print(f"[CLOSE] {symbol}")
+
+        return True
+
+    def cancel_order(self, order_id):
+
+        print(f"[CANCEL] {order_id}")
+
+        return True
+
+===== strategy_engine.py =====
+from jemba_core.ai.predictor import Predictor
+from jemba_core.features.feature_engine import FeatureEngine
+
+
+class StrategyEngine:
+
+    BUY = "BUY"
+    SELL = "SELL"
+    HOLD = "HOLD"
+
+    def __init__(self):
+        self.predictor = Predictor()
+
+    def signal(self, df):
+        df = df.copy()
+
+        df["EMA20"] = FeatureEngine.ema(df, 20)
+        df["EMA50"] = FeatureEngine.ema(df, 50)
+        df["ATR"] = FeatureEngine.atr(df)
+        df["BODY"] = FeatureEngine.body(df)
+        df["BULLISH"] = FeatureEngine.bullish(df)
+        df["BEARISH"] = FeatureEngine.bearish(df)
+
+        prediction = self.predictor.predict_last(df)
+        last = df.iloc[-1]
+
+        if self.buy(last, prediction):
+            return self.BUY
+
+        if self.sell(last, prediction):
+            return self.SELL
+
+        return self.HOLD
+
+    def buy(self, row, prediction):
+        return (
+            row["EMA20"] > row["EMA50"]
+            and prediction == 1
+            and row["BODY"] > row["ATR"] * 0.30
+            and row["BULLISH"]
+        )
+
+    def sell(self, row, prediction):
+        return (
+            row["EMA20"] < row["EMA50"]
+            and prediction == -1
+            and row["BODY"] > row["ATR"] * 0.30
+            and row["BEARISH"]
+        )
+
+===== market_updater.py =====
+from sqlalchemy import text
+
+from jemba_core.providers.bingx_updater import BingXUpdater
+from jemba_core.database.sqlite_storage import SQLiteStorage
+
+
+class MarketUpdater:
+
+    def __init__(self):
+        self.provider = BingXUpdater()
+        self.storage = SQLiteStorage()
+
+    def candle_exists(self, candle):
+        query = text("""
+            SELECT COUNT(*)
+            FROM candles
+            WHERE symbol = :symbol
+              AND timeframe = :timeframe
+              AND timestamp = :timestamp
+        """)
+
+        with self.storage.engine.begin() as conn:
+            result = conn.execute(
+                query,
+                {
+                    "symbol": candle.symbol,
+                    "timeframe": candle.timeframe,
+                    "timestamp": candle.timestamp.isoformat()
+                }
+            )
+
+            return result.scalar() > 0
+
+    def update(self, symbol="BTC-USDT", timeframe="1h"):
+        candle = self.provider.latest_closed_candle(symbol, timeframe)
+
+        if candle is None:
+            return False
+
+        if self.candle_exists(candle):
+            return False
+
+        inserted = self.storage.save_candles([candle])
+
+        return inserted > 0
+
