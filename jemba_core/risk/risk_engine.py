@@ -2,27 +2,23 @@
 
     def __init__(
         self,
-        max_daily_drawdown=0.05,
-        max_consecutive_losses=3,
-        min_confidence=0.70,
-        max_risk_per_trade=0.01
+        min_confidence: float = 0.70,
+        max_daily_drawdown: float = 0.05,
+        max_consecutive_losses: int = 3,
     ):
-
-        self.max_daily_drawdown = max_daily_drawdown
-        self.max_consecutive_losses = max_consecutive_losses
-        self.min_confidence = min_confidence
-        self.max_risk_per_trade = max_risk_per_trade
+        self.min_confidence = float(min_confidence)
+        self.max_daily_drawdown = float(max_daily_drawdown)
+        self.max_consecutive_losses = int(max_consecutive_losses)
 
     def validate(
         self,
         portfolio,
-        confidence,
-        consecutive_losses=0,
-        daily_drawdown=0,
-        position_size=0,
-        has_open_position=False
+        confidence: float,
+        position_size: float,
+        has_open_position: bool = False,
+        consecutive_losses: int = 0,
+        daily_drawdown: float = 0.0,
     ):
-
         reasons = []
 
         if confidence < self.min_confidence:
@@ -40,9 +36,7 @@
         if position_size <= 0:
             reasons.append("INVALID_POSITION_SIZE")
 
-        approved = len(reasons) == 0
-
         return {
-            "approved": approved,
-            "reasons": reasons
+            "approved": len(reasons) == 0,
+            "reasons": reasons,
         }
