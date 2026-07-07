@@ -1,4 +1,5 @@
-﻿from jemba_core.features.feature_engine import FeatureEngine
+﻿from jemba_core.ai.predictor_engine import PredictorEngine
+from jemba_core.features.feature_engine import FeatureEngine
 
 
 class PipelineEngine:
@@ -15,7 +16,7 @@ class PipelineEngine:
         execution_engine=None,
     ):
         self.feature_engine = feature_engine or FeatureEngine()
-        self.predictor = predictor
+        self.predictor = predictor or PredictorEngine()
         self.confidence_engine = confidence_engine
         self.signal_engine = signal_engine
         self.ranking_engine = ranking_engine
