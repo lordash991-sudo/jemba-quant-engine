@@ -1,20 +1,61 @@
-﻿class RankingEngine:
+﻿from __future__ import annotations
 
-    def rank(self, predictions):
+from dataclasses import dataclass
+from typing import Iterable
 
-        ranked = sorted(
-            predictions,
-            key=lambda x: x["confidence"],
-            reverse=True
+from jemba_core.ai.signal_engine import SignalResult
+
+
+@dataclass(slots=True)
+class RankedSignal:
+    symbol: str
+    score: float
+    signal: SignalResult
+
+
+class RankingEngine:
+
+    def score(self, signal: SignalResult, volatility: float = 1.0) -> float:
+
+        base = signal.confidence
+
+        if signal.action == "BUY":
+            base += 5
+
+        elif signal.action == "SELL":
+            base += 5
+
+        return base * volatility
+
+    def rank(self, signals: Iterable[tuple[str, SignalResult, float]]):
+
+        ranked = []
+
+        for symbol, signal, volatility in signals:
+
+            if signal.action == "HOLD":
+                continue
+
+            ranked.append(
+                RankedSignal(
+                    symbol=symbol,
+                    score=self.score(signal, volatility),
+                    signal=signal,
+                )
+            )
+
+        ranked.sort(
+            key=lambda x: x.score,
+            reverse=True,
         )
 
         return ranked
 
-    def best(self, predictions):
+    def best(self, signals):
 
-        ranked = self.rank(predictions)
+        ranked = self.rank(signals)
 
-        if len(ranked) == 0:
+        if not ranked:
             return None
 
         return ranked[0]
