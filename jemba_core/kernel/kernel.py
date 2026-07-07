@@ -1,6 +1,7 @@
 ﻿from time import sleep
 
 from jemba_core.kernel.bootstrap import Bootstrap
+from jemba_core.pipeline.pipeline_engine import PipelineEngine
 
 
 class JembaKernel:
@@ -17,6 +18,10 @@ class JembaKernel:
             return self.container
 
         self.container = self.bootstrap.build()
+
+        if self.pipeline is None:
+            self.pipeline = PipelineEngine()
+
         self.running = True
 
         return self.container
@@ -29,11 +34,13 @@ class JembaKernel:
         self.start()
 
         for _ in range(cycles):
+            market_data = None
+
             if self.market is not None:
-                self.market.update()
+                market_data = self.market.update()
 
             if self.pipeline is not None:
-                self.pipeline.execute()
+                self.pipeline.execute(market_data)
 
             sleep(delay)
 
