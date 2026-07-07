@@ -1,74 +1,77 @@
-﻿from jemba_core.events.trade_signal_event import TradeSignalEvent
-from jemba_core.signals.signal_engine import SignalEngine
+﻿from jemba_core.ai.confidence_engine import ConfidenceResult
+from jemba_core.ai.signal_engine import SignalEngine
 
 
-def test_generate_buy_signal():
-    engine = SignalEngine()
+def test_buy_signal():
 
-    signal = engine.generate_signal(
-        symbol="BTC-USDT",
-        timeframe="1h",
-        action="BUY",
-        entry=100,
-        confidence=0.90,
-        atr=5,
+    signal = SignalEngine()
+
+    confidence = ConfidenceResult(
+        confidence=90,
+        probability=0.95,
+        prediction=1,
     )
 
-    assert signal.action == "BUY"
-    assert signal.stop_loss == 95
-    assert signal.take_profit == 110
+    result = signal.generate(confidence)
+
+    assert result.action == "BUY"
 
 
-def test_generate_sell_signal():
-    engine = SignalEngine()
+def test_sell_signal():
 
-    signal = engine.generate_signal(
-        symbol="BTC-USDT",
-        timeframe="1h",
-        action="SELL",
-        entry=100,
-        confidence=0.90,
-        atr=5,
+    signal = SignalEngine()
+
+    confidence = ConfidenceResult(
+        confidence=91,
+        probability=0.93,
+        prediction=-1,
     )
 
-    assert signal.action == "SELL"
-    assert signal.stop_loss == 105
-    assert signal.take_profit == 90
+    result = signal.generate(confidence)
+
+    assert result.action == "SELL"
 
 
-def test_hold_returns_none():
-    engine = SignalEngine()
+def test_hold_low_confidence():
 
-    signal = engine.generate_signal(
-        symbol="BTC-USDT",
-        timeframe="1h",
-        action="HOLD",
-        entry=100,
-        confidence=0.50,
-        atr=5,
+    signal = SignalEngine()
+
+    confidence = ConfidenceResult(
+        confidence=20,
+        probability=0.60,
+        prediction=1,
     )
 
-    assert signal is None
+    result = signal.generate(confidence)
+
+    assert result.action == "HOLD"
 
 
-def test_signal_to_trade_signal_event():
-    engine = SignalEngine()
+def test_probability_preserved():
 
-    signal = engine.generate_signal(
-        symbol="BTC-USDT",
-        timeframe="1h",
-        action="BUY",
-        entry=100,
-        confidence=0.90,
-        atr=5,
+    signal = SignalEngine()
+
+    confidence = ConfidenceResult(
+        confidence=80,
+        probability=0.87,
+        prediction=1,
     )
 
-    event = engine.to_event(signal)
+    result = signal.generate(confidence)
 
-    assert isinstance(event, TradeSignalEvent)
-    assert event.event_type == "TradeSignalEvent"
-    assert event.symbol == "BTC-USDT"
-    assert event.side == "BUY"
-    assert event.entry == 100
-    assert event.stop_loss == 95
-    assert event.take_profit == 110
+    assert result.probability == 0.87
+
+
+def test_confidence_preserved():
+
+    signal = SignalEngine()
+
+    confidence = ConfidenceResult(
+        confidence=77,
+        probability=0.82,
+        prediction=-1,
+    )
+
+    result = signal.generate(confidence)
+
+    assert result.confidence == 77
