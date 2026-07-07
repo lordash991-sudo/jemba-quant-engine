@@ -1,0 +1,22 @@
+﻿mode: paper
+broker: bingx
+timeframe: 1h
+
+symbols:
+  - BTC-USDT
+  - ETH-USDT
+  - SOL-USDT
+
+risk:
+  account_balance: 10000
+  risk_per_trade: 0.01
+  max_positions: 1
+
+confidence:
+  minimum: 0.70
+
+paper:
+  enabled: true
+
+live:
+  enabled: false

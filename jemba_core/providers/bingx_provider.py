@@ -9,11 +9,14 @@ class BingXProvider:
         self.timeout = timeout
 
     def ping(self):
-        r = requests.get(
-            self.BASE_URL + "/openApi/swap/v2/server/time",
-            timeout=self.timeout,
-        )
-        return r.status_code == 200
+        try:
+            r = requests.get(
+                self.BASE_URL + "/openApi/swap/v2/server/time",
+                timeout=self.timeout,
+            )
+            return r.status_code == 200
+        except Exception:
+            return False
 
     def get_price(self, symbol):
         r = requests.get(
@@ -22,7 +25,8 @@ class BingXProvider:
             timeout=self.timeout,
         )
         r.raise_for_status()
-        return r.json()
+        payload = r.json()
+        return payload.get("data", payload)
 
     def get_candles(self, symbol, timeframe, limit=500):
         r = requests.get(
@@ -35,12 +39,31 @@ class BingXProvider:
             timeout=self.timeout,
         )
         r.raise_for_status()
-        return r.json()
+
+        payload = r.json()
+        data = payload.get("data", payload)
+
+        if isinstance(data, dict):
+            if "data" in data:
+                return data["data"]
+            if "klines" in data:
+                return data["klines"]
+            if "list" in data:
+                return data["list"]
+
+        return data
 
     def get_latest(self, symbol, timeframe):
-        data = self.get_candles(symbol, timeframe, limit=1)
+        candles = self.get_candles(
+            symbol=symbol,
+            timeframe=timeframe,
+            limit=1,
+        )
 
-        if not data:
+        if not candles:
             return None
 
-        return data[-1]
+        if isinstance(candles, list):
+            return candles[-1]
+
+        return candles
