@@ -1,38 +1,70 @@
 ﻿from jemba_core.features.feature_engine import FeatureEngine
 
 
+def sample_candles(n=250):
+    candles = []
+
+    for i in range(n):
+        price = 100 + i
+
+        candles.append(
+            {
+                "open": str(price),
+                "high": str(price + 5),
+                "low": str(price - 5),
+                "close": str(price + 2),
+                "volume": str(1000 + i),
+            }
+        )
+
+    return candles
+
+
 def test_build_dataframe():
     engine = FeatureEngine()
 
-    candles = [
-        {
-            "open": "100",
-            "high": "110",
-            "low": "90",
-            "close": "105",
-            "volume": "200",
-        }
-    ]
+    df = engine.build(sample_candles())
 
-    df = engine.build(candles)
-
-    assert len(df) == 1
-    assert float(df.iloc[0]["close"]) == 105.0
+    assert len(df) == 250
+    assert float(df.iloc[-1]["close"]) == 351.0
 
 
 def test_latest():
     engine = FeatureEngine()
 
-    candles = [
-        {
-            "open": "1",
-            "high": "2",
-            "low": "0.5",
-            "close": "1.5",
-            "volume": "100",
-        }
+    latest = engine.latest(sample_candles())
+
+    assert latest["close"] == 351.0
+
+
+def test_indicators_exist():
+    engine = FeatureEngine()
+
+    df = engine.build(sample_candles())
+
+    expected = [
+        "ema_20",
+        "ema_50",
+        "ema_200",
+        "atr_14",
+        "rsi_14",
+        "return_1",
+        "volatility_20",
+        "momentum_10",
+        "volume_sma_20",
     ]
 
-    latest = engine.latest(candles)
+    for col in expected:
+        assert col in df.columns
 
-    assert latest["close"] == 1.5
+
+def test_latest_indicators_not_empty():
+    engine = FeatureEngine()
+
+    latest = engine.latest(sample_candles())
+
+    assert latest["ema_20"] is not None
+    assert latest["ema_50"] is not None
+    assert latest["ema_200"] is not None
+    assert latest["atr_14"] is not None
+    assert latest["rsi_14"] is not None
