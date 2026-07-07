@@ -1,5 +1,4 @@
-﻿import pandas as pd
-
+﻿
 from jemba_core.ai.predictor_service import PredictorService
 
 

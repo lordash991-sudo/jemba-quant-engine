@@ -1,14 +1,13 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT_DIR))
 
 import pandas as pd
 
-from jemba_core.providers.bingx_provider import BingXProvider
 from jemba_core.features.feature_engine import FeatureEngine
-
+from jemba_core.providers.bingx_provider import BingXProvider
 
 provider = BingXProvider()
 

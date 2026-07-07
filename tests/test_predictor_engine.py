@@ -1,4 +1,5 @@
 ﻿from unittest.mock import MagicMock
+
 import pandas as pd
 
 from jemba_core.ai.predictor_engine import PredictorEngine

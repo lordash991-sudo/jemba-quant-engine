@@ -1,15 +1,14 @@
-﻿# -*- coding: utf-8 -*-
-
-from pathlib import Path
+﻿
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT))
 
-from jemba_core.database.sqlite_storage import SQLiteStorage
-from jemba_core.database.candle_repository import CandleRepository
-from jemba_core.features.feature_engine import FeatureEngine
 from jemba_core.ai.predictor import Predictor
+from jemba_core.database.candle_repository import CandleRepository
+from jemba_core.database.sqlite_storage import SQLiteStorage
+from jemba_core.features.feature_engine import FeatureEngine
 
 storage = SQLiteStorage()
 repo = CandleRepository(storage)

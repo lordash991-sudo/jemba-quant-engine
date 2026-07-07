@@ -1,11 +1,10 @@
-﻿from pathlib import Path
-import sys
+﻿import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT))
 
-from jemba_core.risk.risk_manager import RiskConfig
-from jemba_core.risk.risk_manager import RiskManager
+from jemba_core.risk.risk_manager import RiskConfig, RiskManager
 
 cfg = RiskConfig(
     account_balance=1000,

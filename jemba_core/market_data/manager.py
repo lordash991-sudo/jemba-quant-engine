@@ -1,5 +1,5 @@
-from jemba_core.providers.bingx_provider import BingXProvider
 from jemba_core.database.sqlite_storage import SQLiteStorage
+from jemba_core.providers.bingx_provider import BingXProvider
 
 
 class MarketDataManager:

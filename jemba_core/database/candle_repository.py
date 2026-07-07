@@ -1,8 +1,6 @@
 import pandas as pd
 from sqlalchemy import text
 
-from config.project import DATABASE_DIR
-
 
 class CandleRepository:
 

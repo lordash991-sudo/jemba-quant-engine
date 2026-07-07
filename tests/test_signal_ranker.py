@@ -1,5 +1,4 @@
-﻿from jemba_core.signals.signal_ranker import RankedSignal
-from jemba_core.signals.signal_ranker import SignalRanker
+﻿from jemba_core.signals.signal_ranker import RankedSignal, SignalRanker
 
 
 def test_rank_order():

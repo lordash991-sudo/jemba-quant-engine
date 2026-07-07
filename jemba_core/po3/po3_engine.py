@@ -1,5 +1,5 @@
 ﻿from dataclasses import dataclass
-from typing import List, Optional
+
 import pandas as pd
 
 
@@ -12,8 +12,8 @@ class PO3Trade:
     entry_price: float
     stop_loss: float
     take_profit: float
-    exit_index: Optional[int] = None
-    exit_price: Optional[float] = None
+    exit_index: int | None = None
+    exit_price: float | None = None
     result: str = "OPEN"
 
 
@@ -35,7 +35,7 @@ class PO3Engine:
         self.rr = rr
         self.sl_atr_mult = sl_atr_mult
 
-    def detect(self, df: pd.DataFrame, symbol: str, timeframe: str) -> List[PO3Trade]:
+    def detect(self, df: pd.DataFrame, symbol: str, timeframe: str) -> list[PO3Trade]:
         df = df.copy().reset_index(drop=True)
 
         if "ATR" not in df.columns:

@@ -1,11 +1,11 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT_DIR))
 
-from jemba_core.providers.bingx_provider import BingXProvider
 from jemba_core.database.sqlite_storage import SQLiteStorage
+from jemba_core.providers.bingx_provider import BingXProvider
 
 
 def main():

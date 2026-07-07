@@ -1,5 +1,4 @@
-﻿from pathlib import Path
-import json
+﻿import json
 
 from jemba_core.paper.paper_report import PaperReport
 

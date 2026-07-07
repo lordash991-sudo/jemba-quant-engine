@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import List
+
 from jemba_core.common.candle import Candle
 
 
 class MarketProvider(ABC):
     @abstractmethod
-    def get_candles(self, symbol: str, timeframe: str, limit: int = 500) -> List[Candle]:
+    def get_candles(self, symbol: str, timeframe: str, limit: int = 500) -> list[Candle]:
         pass
 
     @abstractmethod
@@ -13,5 +13,5 @@ class MarketProvider(ABC):
         pass
 
     @abstractmethod
-    def get_symbols(self) -> List[str]:
+    def get_symbols(self) -> list[str]:
         pass

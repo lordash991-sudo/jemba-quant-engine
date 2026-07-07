@@ -1,5 +1,5 @@
-﻿from jemba_core.ai.signal_engine import SignalResult
-from jemba_core.ai.ranking_engine import RankingEngine
+﻿from jemba_core.ai.ranking_engine import RankingEngine
+from jemba_core.ai.signal_engine import SignalResult
 
 
 def signal(action, confidence):

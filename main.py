@@ -5,7 +5,6 @@ import warnings
 
 from jemba_core.engine.scheduler import Scheduler
 
-
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=ResourceWarning)
 

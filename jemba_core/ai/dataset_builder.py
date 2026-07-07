@@ -1,4 +1,3 @@
-import pandas as pd
 
 from jemba_core.database.candle_repository import CandleRepository
 from jemba_core.database.sqlite_storage import SQLiteStorage

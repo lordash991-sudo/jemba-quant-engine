@@ -1,5 +1,6 @@
 from config.settings import *
 
+
 class ConfigManager:
 
     @staticmethod

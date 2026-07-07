@@ -1,5 +1,5 @@
 ﻿from jemba_core.kernel.container import Container
-from jemba_core.kernel.modes import PAPER, LIVE, BACKTEST, SIMULATION, VALID_MODES
+from jemba_core.kernel.modes import BACKTEST, LIVE, PAPER, SIMULATION, VALID_MODES
 
 
 def test_container_initializes():

@@ -1,5 +1,6 @@
-﻿from pathlib import Path
-import sys
+﻿import sys
+from pathlib import Path
+
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent

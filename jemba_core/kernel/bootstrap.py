@@ -14,7 +14,7 @@ class Bootstrap:
     def build(self):
         container = Container()
 
-        with open(self.config_path, "r", encoding="utf-8") as f:
+        with open(self.config_path, encoding="utf-8") as f:
             container.config = yaml.safe_load(f)
 
         broker = container.config.get("broker", "").lower()

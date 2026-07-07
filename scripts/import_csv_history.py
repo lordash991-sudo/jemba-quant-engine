@@ -1,13 +1,13 @@
-﻿from pathlib import Path
-import sys
+﻿import sys
+from pathlib import Path
+
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(ROOT))
 
-from jemba_core.database.sqlite_storage import SQLiteStorage
 from jemba_core.common.candle import Candle
-
+from jemba_core.database.sqlite_storage import SQLiteStorage
 
 DATA_DIR = Path(r"C:\Users\Jemba\OneDrive\Escritorio\JEMBA_BTC_LAB\01_DATA")
 

@@ -1,6 +1,7 @@
-﻿import joblib
+﻿from pathlib import Path
+
+import joblib
 import pandas as pd
-from pathlib import Path
 
 
 class Predictor:

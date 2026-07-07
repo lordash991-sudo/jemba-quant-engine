@@ -1,16 +1,16 @@
 ﻿from pathlib import Path
+
 import joblib
 import pandas as pd
-
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score
+from sklearn.model_selection import train_test_split
 
-from jemba_core.database.sqlite_storage import SQLiteStorage
-from jemba_core.database.candle_repository import CandleRepository
-from jemba_core.features.feature_engine import FeatureEngine
-from jemba_core.ai.label_generator import LabelGenerator
 from jemba_core.ai.feature_selector import FEATURES
+from jemba_core.ai.label_generator import LabelGenerator
+from jemba_core.database.candle_repository import CandleRepository
+from jemba_core.database.sqlite_storage import SQLiteStorage
+from jemba_core.features.feature_engine import FeatureEngine
 
 
 class PortfolioTrainer:
