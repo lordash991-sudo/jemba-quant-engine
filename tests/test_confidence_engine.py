@@ -1,31 +1,56 @@
-from jemba_core.ai.confidence_engine import ConfidenceEngine
+﻿from jemba_core.ai.confidence_engine import ConfidenceEngine
 
 
-def test_confidence_score():
-
+def test_low_probability():
     engine = ConfidenceEngine()
 
     result = engine.calculate(
-        ai_probability=0.92,
-        trend_score=0.85,
-        volatility_score=0.75,
-        momentum_score=0.80,
+        prediction=1,
+        probability=0.51,
     )
 
-    assert result.score > 0.80
+    assert result.confidence == 0
 
 
-def test_confidence_clamps_values():
-
+def test_medium_probability():
     engine = ConfidenceEngine()
 
     result = engine.calculate(
-        ai_probability=5,
-        trend_score=-2,
-        volatility_score=0.5,
-        momentum_score=2,
+        prediction=1,
+        probability=0.70,
     )
 
-    assert result.ai == 1
-    assert result.trend == 0
-    assert result.momentum == 1
+    assert result.confidence > 20
+
+
+def test_high_probability():
+    engine = ConfidenceEngine()
+
+    result = engine.calculate(
+        prediction=1,
+        probability=0.95,
+    )
+
+    assert result.confidence > 85
+
+
+def test_probability_is_preserved():
+    engine = ConfidenceEngine()
+
+    result = engine.calculate(
+        prediction=0,
+        probability=0.81,
+    )
+
+    assert result.probability == 0.81
+
+
+def test_prediction_is_preserved():
+    engine = ConfidenceEngine()
+
+    result = engine.calculate(
+        prediction=1,
+        probability=0.80,
+    )
+
+    assert result.prediction == 1
