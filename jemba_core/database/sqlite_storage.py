@@ -1,79 +1,80 @@
+from __future__ import annotations
+
+import sqlite3
 from pathlib import Path
-
-from sqlalchemy import create_engine, text
-
-from config.project import DATABASE_DIR
 
 
 class SQLiteStorage:
-    def __init__(self, database_name: str = "jemba.db"):
-        self.database_path = DATABASE_DIR / database_name
-        self.engine = create_engine(f"sqlite:///{self.database_path}")
 
-    def create_tables(self) -> None:
-        with self.engine.begin() as conn:
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS candles (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    symbol TEXT NOT NULL,
-                    timeframe TEXT NOT NULL,
-                    timestamp TEXT NOT NULL,
-                    open REAL NOT NULL,
-                    high REAL NOT NULL,
-                    low REAL NOT NULL,
-                    close REAL NOT NULL,
-                    volume REAL NOT NULL,
-                    UNIQUE(symbol, timeframe, timestamp)
-                )
-            """))
+    def __init__(self, database="database/jemba.db"):
 
-    def save_candles(self, candles) -> int:
-        if not candles:
-            return 0
+        self.path = Path(database)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
 
-        inserted = 0
+        self.connection = sqlite3.connect(self.path)
+        self.connection.row_factory = sqlite3.Row
 
-        with self.engine.begin() as conn:
-            for candle in candles:
-                result = conn.execute(
-                    text("""
-                        INSERT OR IGNORE INTO candles (
-                            symbol,
-                            timeframe,
-                            timestamp,
-                            open,
-                            high,
-                            low,
-                            close,
-                            volume
-                        )
-                        VALUES (
-                            :symbol,
-                            :timeframe,
-                            :timestamp,
-                            :open,
-                            :high,
-                            :low,
-                            :close,
-                            :volume
-                        )
-                    """),
-                    {
-                        "symbol": candle.symbol,
-                        "timeframe": candle.timeframe,
-                        "timestamp": candle.timestamp.isoformat(),
-                        "open": candle.open,
-                        "high": candle.high,
-                        "low": candle.low,
-                        "close": candle.close,
-                        "volume": candle.volume,
-                    },
-                )
-                inserted += result.rowcount
+    def execute(self, sql, params=()):
 
-        return inserted
+        cursor = self.connection.cursor()
+        cursor.execute(sql, params)
+        self.connection.commit()
 
-    def count_candles(self) -> int:
-        with self.engine.begin() as conn:
-            result = conn.execute(text("SELECT COUNT(*) FROM candles"))
-            return int(result.scalar())
+        return cursor
+
+    def create_tables(self):
+
+        self.execute("""
+        CREATE TABLE IF NOT EXISTS trades(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            symbol TEXT,
+            side TEXT,
+            size REAL,
+            entry REAL,
+            exit REAL,
+            pnl REAL,
+            created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
+    def insert_trade(
+        self,
+        symbol,
+        side,
+        size,
+        entry,
+        exit_price,
+        pnl,
+    ):
+
+        self.execute(
+            """
+            INSERT INTO trades
+            (
+                symbol,
+                side,
+                size,
+                entry,
+                exit,
+                pnl
+            )
+            VALUES
+            (?,?,?,?,?,?)
+            """,
+            (
+                symbol,
+                side,
+                size,
+                entry,
+                exit_price,
+                pnl,
+            ),
+        )
+
+    def trades(self):
+
+        cursor = self.execute(
+            "SELECT * FROM trades ORDER BY id"
+        )
+
+        return cursor.fetchall()
