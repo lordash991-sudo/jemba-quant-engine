@@ -1,0 +1,119 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jemba-quant-engine"
+version = "0.1.0-alpha"
+description = "JEMBA Quant Engine - AI Quantitative Trading Platform"
+readme = "README.md"
+requires-python = ">=3.11"
+
+authors = [
+    { name = "Diego Alberto Piñeros Castro", email = "lordash991@gmail.com" }
+]
+
+license = { text = "Proprietary" }
+
+keywords = [
+    "trading",
+    "quant",
+    "ai",
+    "crypto",
+    "bingx",
+    "machine-learning"
+]
+
+dependencies = [
+    "numpy>=2.0",
+    "pandas>=2.2",
+    "scikit-learn>=1.6",
+    "requests>=2.32",
+    "python-dotenv>=1.0",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=6.0",
+    "black>=24.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "pre-commit>=3.8",
+]
+
+dashboard = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "plotly>=5.24",
+]
+
+ml = [
+    "xgboost",
+    "lightgbm",
+    "catboost",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["jemba_core*"]
+
+[tool.black]
+
+line-length = 88
+target-version = ["py311"]
+
+[tool.ruff]
+
+line-length = 88
+target-version = "py311"
+
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "build",
+    "dist",
+]
+
+[tool.ruff.lint]
+
+select = [
+    "E",
+    "F",
+    "I",
+    "UP",
+    "B",
+]
+
+ignore = []
+
+[tool.pytest.ini_options]
+
+pythonpath = ["."]
+testpaths = [
+    "tests",
+]
+
+addopts = "-ra"
+
+[tool.mypy]
+
+python_version = "3.11"
+
+ignore_missing_imports = true
+
+warn_unused_configs = true
+
+warn_return_any = true
+
+warn_unused_ignores = true
+
+disallow_untyped_defs = false
+
+check_untyped_defs = true

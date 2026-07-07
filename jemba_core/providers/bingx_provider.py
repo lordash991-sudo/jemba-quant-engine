@@ -1,22 +1,34 @@
-﻿import requests
+﻿from __future__ import annotations
+
+import requests
 
 
 class BingXProvider:
-
     BASE_URL = "https://open-api.bingx.com"
 
     def __init__(self, timeout=10):
         self.timeout = timeout
 
     def ping(self):
-        try:
-            r = requests.get(
-                self.BASE_URL + "/openApi/swap/v2/server/time",
-                timeout=self.timeout,
-            )
-            return r.status_code == 200
-        except Exception:
-            return False
+        r = requests.get(
+            self.BASE_URL + "/openApi/swap/v2/server/time",
+            timeout=self.timeout,
+        )
+        return r.status_code == 200
+
+    def _extract_data(self, payload):
+        if isinstance(payload, list):
+            return payload
+
+        if isinstance(payload, dict):
+            data = payload.get("data", payload)
+
+            if isinstance(data, dict) and "list" in data:
+                return data["list"]
+
+            return data
+
+        return payload
 
     def get_price(self, symbol):
         r = requests.get(
@@ -25,8 +37,8 @@ class BingXProvider:
             timeout=self.timeout,
         )
         r.raise_for_status()
-        payload = r.json()
-        return payload.get("data", payload)
+
+        return self._extract_data(r.json())
 
     def get_candles(self, symbol, timeframe, limit=500):
         r = requests.get(
@@ -40,18 +52,7 @@ class BingXProvider:
         )
         r.raise_for_status()
 
-        payload = r.json()
-        data = payload.get("data", payload)
-
-        if isinstance(data, dict):
-            if "data" in data:
-                return data["data"]
-            if "klines" in data:
-                return data["klines"]
-            if "list" in data:
-                return data["list"]
-
-        return data
+        return self._extract_data(r.json())
 
     def get_latest(self, symbol, timeframe):
         candles = self.get_candles(

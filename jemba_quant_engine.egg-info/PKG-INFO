@@ -1,0 +1,30 @@
+Metadata-Version: 2.4
+Name: jemba-quant-engine
+Version: 0.1.0a0
+Summary: JEMBA Quant Engine - AI Quantitative Trading Platform
+Author-email: Diego Alberto Piñeros Castro <lordash991@gmail.com>
+License: Proprietary
+Keywords: trading,quant,ai,crypto,bingx,machine-learning
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: numpy>=2.0
+Requires-Dist: pandas>=2.2
+Requires-Dist: scikit-learn>=1.6
+Requires-Dist: requests>=2.32
+Requires-Dist: python-dotenv>=1.0
+Requires-Dist: PyYAML>=6.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0; extra == "dev"
+Requires-Dist: pytest-cov>=6.0; extra == "dev"
+Requires-Dist: black>=24.0; extra == "dev"
+Requires-Dist: ruff>=0.6; extra == "dev"
+Requires-Dist: mypy>=1.11; extra == "dev"
+Requires-Dist: pre-commit>=3.8; extra == "dev"
+Provides-Extra: dashboard
+Requires-Dist: fastapi>=0.115; extra == "dashboard"
+Requires-Dist: uvicorn>=0.30; extra == "dashboard"
+Requires-Dist: plotly>=5.24; extra == "dashboard"
+Provides-Extra: ml
+Requires-Dist: xgboost; extra == "ml"
+Requires-Dist: lightgbm; extra == "ml"
+Requires-Dist: catboost; extra == "ml"
