@@ -1,4 +1,6 @@
-﻿from jemba_core.kernel.bootstrap import Bootstrap
+﻿from time import sleep
+
+from jemba_core.kernel.bootstrap import Bootstrap
 
 
 class JembaKernel:
@@ -7,6 +9,8 @@ class JembaKernel:
         self.bootstrap = bootstrap or Bootstrap()
         self.container = None
         self.running = False
+        self.market = None
+        self.pipeline = None
 
     def start(self):
         if self.running:
@@ -20,6 +24,20 @@ class JembaKernel:
     def stop(self):
         self.running = False
         self.container = None
+
+    def run(self, cycles=1, delay=1):
+        self.start()
+
+        for _ in range(cycles):
+            if self.market is not None:
+                self.market.update()
+
+            if self.pipeline is not None:
+                self.pipeline.execute()
+
+            sleep(delay)
+
+        return True
 
     @property
     def provider(self):
