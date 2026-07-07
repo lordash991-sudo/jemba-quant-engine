@@ -1,9 +1,44 @@
 ﻿from unittest.mock import MagicMock
 
+from jemba_core.features.feature_engine import FeatureEngine
 from jemba_core.pipeline.pipeline_engine import PipelineEngine
 
 
-def test_pipeline_engine():
+def sample_candles():
+    candles = []
+
+    for i in range(250):
+        price = 100 + i
+        candles.append(
+            {
+                "open": str(price),
+                "high": str(price + 5),
+                "low": str(price - 5),
+                "close": str(price + 2),
+                "volume": str(1000 + i),
+            }
+        )
+
+    return candles
+
+
+def test_pipeline_uses_default_feature_engine():
+    pipeline = PipelineEngine()
+
+    assert isinstance(pipeline.feature_engine, FeatureEngine)
+
+
+def test_pipeline_generates_features():
+    pipeline = PipelineEngine()
+
+    result = pipeline.execute(sample_candles())
+
+    assert "ema_20" in result.columns
+    assert "rsi_14" in result.columns
+    assert "atr_14" in result.columns
+
+
+def test_pipeline_full_chain():
     feature = MagicMock()
     predictor = MagicMock()
     confidence = MagicMock()
@@ -13,7 +48,7 @@ def test_pipeline_engine():
     portfolio = MagicMock()
     execution = MagicMock()
 
-    feature.compute.return_value = "features"
+    feature.build.return_value = "features"
     predictor.predict.return_value = "prediction"
     confidence.evaluate.return_value = "confidence"
     signal.generate.return_value = "signal"

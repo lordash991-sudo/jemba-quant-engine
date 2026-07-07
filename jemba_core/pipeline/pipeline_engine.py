@@ -1,4 +1,7 @@
-﻿class PipelineEngine:
+﻿from jemba_core.features.feature_engine import FeatureEngine
+
+
+class PipelineEngine:
 
     def __init__(
         self,
@@ -11,7 +14,7 @@
         portfolio_manager=None,
         execution_engine=None,
     ):
-        self.feature_engine = feature_engine
+        self.feature_engine = feature_engine or FeatureEngine()
         self.predictor = predictor
         self.confidence_engine = confidence_engine
         self.signal_engine = signal_engine
@@ -24,7 +27,7 @@
         data = market
 
         if self.feature_engine:
-            data = self.feature_engine.compute(data)
+            data = self.feature_engine.build(data)
 
         if self.predictor:
             data = self.predictor.predict(data)
