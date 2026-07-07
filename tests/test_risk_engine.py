@@ -1,45 +1,55 @@
-﻿from jemba_core.portfolio.portfolio_manager import PortfolioManager
-from jemba_core.risk.risk_engine import RiskEngine
+﻿from jemba_core.ai.risk_engine import RiskEngine
 
 
-def test_risk_approved():
-    portfolio = PortfolioManager()
-    risk = RiskEngine(min_confidence=0.70)
+def test_risk_amount():
 
-    result = risk.validate(
-        portfolio=portfolio,
-        confidence=0.91,
-        position_size=1,
-    )
+    engine = RiskEngine()
 
-    assert result["approved"] is True
-    assert result["reasons"] == []
+    result = engine.evaluate(10000)
+
+    assert result.risk_amount == 100
 
 
-def test_low_confidence_blocked():
-    portfolio = PortfolioManager()
-    risk = RiskEngine(min_confidence=0.70)
+def test_position():
 
-    result = risk.validate(
-        portfolio=portfolio,
-        confidence=0.55,
-        position_size=1,
-    )
+    engine = RiskEngine()
 
-    assert result["approved"] is False
-    assert "LOW_CONFIDENCE" in result["reasons"]
+    result = engine.evaluate(10000)
+
+    assert result.position_size == 5000
 
 
-def test_position_already_open_blocked():
-    portfolio = PortfolioManager()
-    risk = RiskEngine()
+def test_leverage():
 
-    result = risk.validate(
-        portfolio=portfolio,
-        confidence=0.90,
-        position_size=1,
-        has_open_position=True,
-    )
+    engine = RiskEngine()
 
-    assert result["approved"] is False
-    assert "POSITION_ALREADY_OPEN" in result["reasons"]
+    result = engine.evaluate(10000)
+
+    assert result.leverage == 1
+
+
+def test_allowed():
+
+    engine = RiskEngine()
+
+    result = engine.evaluate(10000)
+
+    assert result.allowed
+
+
+def test_stop_loss():
+
+    engine = RiskEngine()
+
+    result = engine.evaluate(10000)
+
+    assert result.stop_loss_pct == 0.02
+
+
+def test_take_profit():
+
+    engine = RiskEngine()
+
+    result = engine.evaluate(10000)
+
+    assert result.take_profit_pct == 0.04
