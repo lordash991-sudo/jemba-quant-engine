@@ -1,44 +1,53 @@
-﻿FEATURES = [
-    "open",
-    "high",
-    "low",
-    "close",
-    "volume",
+﻿from __future__ import annotations
 
-    "EMA20",
-    "EMA50",
-    "EMA100",
-    "EMA200",
-    "EMA20_GT_EMA50",
-    "EMA50_GT_EMA200",
+from typing import Sequence
 
-    "RSI",
-    "ROC",
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
 
-    "ATR",
-    "ATR_PCT",
 
-    "BODY",
-    "RANGE_PCT",
-    "BULLISH",
-    "BEARISH",
+class FeatureSelector:
+    def __init__(self, random_state: int = 42):
+        self.random_state = random_state
+        self.importances_: pd.Series | None = None
 
-    "VOL_SMA20",
-    "VOL_RATIO",
+    def fit(
+        self,
+        df: pd.DataFrame,
+        target: str = "label",
+    ) -> pd.Series:
 
-    "HIGH20",
-    "LOW20",
-    "DIST_HIGH20",
-    "DIST_LOW20",
+        features = df.drop(columns=[target])
+        labels = df[target]
 
-    "DIST_EMA20",
-    "DIST_EMA50",
-    "DIST_EMA200",
+        model = RandomForestClassifier(
+            n_estimators=200,
+            random_state=self.random_state,
+            n_jobs=-1,
+        )
 
-    "ACC_HIGH",
-    "ACC_LOW",
-    "ACC_RANGE",
-    "DIST_ACC_HIGH",
-    "DIST_ACC_LOW",
-    "INSIDE_ACC",
-]
+        model.fit(features, labels)
+
+        self.importances_ = (
+            pd.Series(
+                model.feature_importances_,
+                index=features.columns,
+            )
+            .sort_values(ascending=False)
+        )
+
+        return self.importances_
+
+    def select(
+        self,
+        df: pd.DataFrame,
+        top_k: int = 25,
+        target: str = "label",
+    ) -> pd.DataFrame:
+
+        if self.importances_ is None:
+            self.fit(df, target)
+
+        selected = list(self.importances_.head(top_k).index)
+
+        return df[selected + [target]]
