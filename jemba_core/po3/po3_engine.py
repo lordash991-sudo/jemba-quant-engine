@@ -1,5 +1,3 @@
-﻿
-
 class PO3Engine:
     def detect(self, df):
         if "ATR" not in df.columns:

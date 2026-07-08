@@ -1,8 +1,7 @@
-﻿from jemba_core.providers.bingx_provider import BingXProvider
+from jemba_core.providers.bingx_provider import BingXProvider
 
 
 class BingXUpdater:
-
     def __init__(self):
         self.provider = BingXProvider()
 

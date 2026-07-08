@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -15,8 +15,7 @@ storage = SQLiteStorage()
 repo = CandleRepository(storage)
 
 symbols_df = pd.read_sql(
-    "SELECT DISTINCT symbol FROM candles ORDER BY symbol",
-    storage.engine
+    "SELECT DISTINCT symbol FROM candles ORDER BY symbol", storage.engine
 )
 
 engine = PO3Engine()
@@ -38,13 +37,15 @@ for symbol in symbols_df["symbol"].tolist():
 
     win_rate = round((wins / total) * 100, 2) if total > 0 else 0
 
-    results.append({
-        "symbol": symbol,
-        "trades": total,
-        "wins": wins,
-        "losses": losses,
-        "win_rate": win_rate
-    })
+    results.append(
+        {
+            "symbol": symbol,
+            "trades": total,
+            "wins": wins,
+            "losses": losses,
+            "win_rate": win_rate,
+        }
+    )
 
 report = pd.DataFrame(results)
 

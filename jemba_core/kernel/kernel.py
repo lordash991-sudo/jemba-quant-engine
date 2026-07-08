@@ -1,11 +1,10 @@
-﻿from time import sleep
+from time import sleep
 
 from jemba_core.kernel.bootstrap import Bootstrap
 from jemba_core.pipeline.pipeline_engine import PipelineEngine
 
 
 class JembaKernel:
-
     def __init__(self, bootstrap=None):
         self.bootstrap = bootstrap or Bootstrap()
         self.container = None

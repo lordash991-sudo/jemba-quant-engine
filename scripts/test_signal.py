@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -11,12 +11,12 @@ from jemba_core.signals.signal_engine import SignalEngine
 storage = SQLiteStorage()
 repo = CandleRepository(storage)
 
-df = repo.load_candles('BTC-USDT', '1h', 200)
+df = repo.load_candles("BTC-USDT", "1h", 200)
 
 engine = SignalEngine(account_balance=1000)
 
-signal = engine.generate(df, 'BTC-USDT', '1h')
+signal = engine.generate(df, "BTC-USDT", "1h")
 
 print()
-print('SIGNAL:')
+print("SIGNAL:")
 print(signal)

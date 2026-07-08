@@ -1,9 +1,8 @@
-﻿from jemba_core.ai.predictor_engine import PredictorEngine
+from jemba_core.ai.predictor_engine import PredictorEngine
 from jemba_core.features.feature_engine import FeatureEngine
 
 
 class PipelineEngine:
-
     def __init__(
         self,
         feature_engine=None,

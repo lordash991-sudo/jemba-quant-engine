@@ -1,9 +1,8 @@
-﻿import time
+import time
 from datetime import UTC, datetime
 
 
 class Scheduler:
-
     def __init__(
         self,
         interval_seconds: int = 60,
@@ -27,10 +26,7 @@ class Scheduler:
         while self.running:
             self.run_once(task, *args, **kwargs)
 
-            if (
-                self.max_cycles is not None
-                and self.cycles_executed >= self.max_cycles
-            ):
+            if self.max_cycles is not None and self.cycles_executed >= self.max_cycles:
                 self.stop()
                 break
 

@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -19,7 +19,7 @@ signal = TradeSignal(
     quantity=0.01,
     stop_loss=61500,
     take_profit=64500,
-    risk_amount=10
+    risk_amount=10,
 )
 
 position = broker.execute(signal)
@@ -27,10 +27,7 @@ position = broker.execute(signal)
 print("POSICION ABIERTA:")
 print(position)
 
-candle = {
-    "high": 64600,
-    "low": 62400
-}
+candle = {"high": 64600, "low": 62400}
 
 closed = broker.update(candle)
 

@@ -1,4 +1,4 @@
-﻿from jemba_core.events.prediction_event import PredictionEvent
+from jemba_core.events.prediction_event import PredictionEvent
 
 
 def test_prediction_event():

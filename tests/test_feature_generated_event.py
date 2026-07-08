@@ -1,4 +1,4 @@
-﻿from jemba_core.events.feature_generated_event import FeatureGeneratedEvent
+from jemba_core.events.feature_generated_event import FeatureGeneratedEvent
 
 
 def test_feature_generated_event():

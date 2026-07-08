@@ -1,4 +1,4 @@
-﻿from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
 
 from jemba_core.ai.metrics import Metrics
 from jemba_core.ai.model_registry import ModelRegistry
@@ -6,7 +6,6 @@ from jemba_core.ai.training_result import TrainingResult
 
 
 class MLPipeline:
-
     def train(
         self,
         df,

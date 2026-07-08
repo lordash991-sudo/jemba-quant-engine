@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -8,7 +8,6 @@ from jemba_core.execution.order_executor import OrderExecutor
 
 
 class FakeProvider:
-
     def place_market_order(self, symbol, side, quantity, stop_loss, take_profit):
         print()
         print("===== ORDEN SIMULADA =====")
@@ -18,9 +17,7 @@ class FakeProvider:
         print(stop_loss)
         print(take_profit)
 
-        return {
-            "orderId": "TEST-123456"
-        }
+        return {"orderId": "TEST-123456"}
 
 
 class Signal:

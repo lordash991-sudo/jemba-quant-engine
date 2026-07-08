@@ -1,4 +1,4 @@
-﻿from jemba_core.events.base_event import BaseEvent
+from jemba_core.events.base_event import BaseEvent
 from jemba_core.events.event_bus import EventBus
 
 

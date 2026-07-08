@@ -1,6 +1,4 @@
-﻿from __future__ import annotations
-
-from typing import Sequence
+from __future__ import annotations
 
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -28,13 +26,10 @@ class FeatureSelector:
 
         model.fit(features, labels)
 
-        self.importances_ = (
-            pd.Series(
-                model.feature_importances_,
-                index=features.columns,
-            )
-            .sort_values(ascending=False)
-        )
+        self.importances_ = pd.Series(
+            model.feature_importances_,
+            index=features.columns,
+        ).sort_values(ascending=False)
 
         return self.importances_
 

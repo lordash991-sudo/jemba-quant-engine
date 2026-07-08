@@ -1,5 +1,4 @@
-﻿class PaperStatistics:
-
+class PaperStatistics:
     @staticmethod
     def calculate(trades):
         total_trades = len(trades)

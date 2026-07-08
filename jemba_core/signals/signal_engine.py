@@ -1,4 +1,4 @@
-﻿from dataclasses import dataclass
+from dataclasses import dataclass
 
 from jemba_core.events.trade_signal_event import TradeSignalEvent
 
@@ -16,7 +16,6 @@ class TradeSignal:
 
 
 class SignalEngine:
-
     def generate_signal(
         self,
         symbol: str,

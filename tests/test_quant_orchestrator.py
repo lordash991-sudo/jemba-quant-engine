@@ -1,4 +1,4 @@
-﻿from jemba_core.engine.quant_orchestrator import QuantOrchestrator
+from jemba_core.engine.quant_orchestrator import QuantOrchestrator
 
 
 def test_quant_orchestrator_can_initialize():

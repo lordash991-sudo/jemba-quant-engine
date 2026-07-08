@@ -1,4 +1,4 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 from jemba_core.engine.market_updater import MarketUpdater
 

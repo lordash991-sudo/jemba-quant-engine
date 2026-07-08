@@ -1,4 +1,4 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 from jemba_core.paper.paper_engine import PaperEngine
 
@@ -8,9 +8,7 @@ def test_paper_engine_run_once():
     order_executor = MagicMock()
 
     trade_engine.execute.return_value = "TRADE"
-    order_executor.execute.return_value = {
-        "status": "FILLED"
-    }
+    order_executor.execute.return_value = {"status": "FILLED"}
 
     engine = PaperEngine(
         trade_engine=trade_engine,

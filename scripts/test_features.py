@@ -11,11 +11,7 @@ from jemba_core.providers.bingx_provider import BingXProvider
 
 provider = BingXProvider()
 
-candles = provider.get_candles(
-    "BTC-USDT",
-    "1h",
-    50
-)
+candles = provider.get_candles("BTC-USDT", "1h", 50)
 
 df = pd.DataFrame([c.__dict__ for c in candles])
 

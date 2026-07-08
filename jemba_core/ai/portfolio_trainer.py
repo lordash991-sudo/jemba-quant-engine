@@ -14,7 +14,6 @@ from jemba_core.features.feature_engine import FeatureEngine
 
 
 class PortfolioTrainer:
-
     def __init__(self):
         self.storage = SQLiteStorage()
         self.repo = CandleRepository(self.storage)
@@ -47,10 +46,7 @@ class PortfolioTrainer:
         y = df["LABEL"]
 
         X_train, X_test, y_train, y_test = train_test_split(
-            X,
-            y,
-            test_size=0.20,
-            shuffle=False
+            X, y, test_size=0.20, shuffle=False
         )
 
         model = RandomForestClassifier(
@@ -59,7 +55,7 @@ class PortfolioTrainer:
             min_samples_leaf=5,
             random_state=42,
             n_jobs=-1,
-            class_weight="balanced"
+            class_weight="balanced",
         )
 
         model.fit(X_train, y_train)
@@ -74,15 +70,13 @@ class PortfolioTrainer:
 
         joblib.dump(model, model_path)
 
-        importance = pd.DataFrame({
-            "feature": FEATURES,
-            "importance": model.feature_importances_
-        }).sort_values("importance", ascending=False)
+        importance = pd.DataFrame(
+            {"feature": FEATURES, "importance": model.feature_importances_}
+        ).sort_values("importance", ascending=False)
 
         importance_path = (
-    Path("models/trained")
-    / f"{safe_symbol}_feature_importance.csv"
-)
+            Path("models/trained") / f"{safe_symbol}_feature_importance.csv"
+        )
         importance.to_csv(importance_path, index=False)
 
         return {
@@ -92,7 +86,7 @@ class PortfolioTrainer:
             "accuracy": round(accuracy, 4),
             "f1_score": round(f1, 4),
             "model": str(model_path),
-            "importance": str(importance_path)
+            "importance": str(importance_path),
         }
 
     def train_all(self):

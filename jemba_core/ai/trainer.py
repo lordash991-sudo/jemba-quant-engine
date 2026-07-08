@@ -7,7 +7,6 @@ from sklearn.model_selection import train_test_split
 
 
 class Trainer:
-
     def __init__(self):
 
         self.features = [
@@ -26,18 +25,11 @@ class Trainer:
         y = df["LABEL"]
 
         X_train, X_test, y_train, y_test = train_test_split(
-            X,
-            y,
-            test_size=0.20,
-            random_state=42,
-            shuffle=False
+            X, y, test_size=0.20, random_state=42, shuffle=False
         )
 
         model = RandomForestClassifier(
-            n_estimators=300,
-            max_depth=10,
-            random_state=42,
-            n_jobs=-1
+            n_estimators=300, max_depth=10, random_state=42, n_jobs=-1
         )
 
         model.fit(X_train, y_train)
@@ -46,14 +38,8 @@ class Trainer:
 
         print(classification_report(y_test, predictions))
 
-        Path("models/trained").mkdir(
-            parents=True,
-            exist_ok=True
-        )
+        Path("models/trained").mkdir(parents=True, exist_ok=True)
 
-        joblib.dump(
-            model,
-            "models/trained/random_forest.pkl"
-        )
+        joblib.dump(model, "models/trained/random_forest.pkl")
 
         return model

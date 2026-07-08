@@ -13,7 +13,6 @@ class TradeDecision:
 
 
 class TradeEngine:
-
     def __init__(
         self,
         feature_engine,
@@ -38,14 +37,9 @@ class TradeEngine:
 
         prediction = self.predictor_engine.latest(features)
 
-        confidence = self.confidence_engine.calculate(
-            prediction
-        )
+        confidence = self.confidence_engine.calculate(prediction)
 
-        signal = self.signal_engine.generate(
-            prediction,
-            confidence
-        )
+        signal = self.signal_engine.generate(prediction, confidence)
 
         ranking = self.ranking_engine.rank(signal)
 

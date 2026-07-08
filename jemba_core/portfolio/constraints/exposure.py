@@ -1,4 +1,4 @@
-﻿from jemba_core.portfolio.constraints.base import Constraint
+from jemba_core.portfolio.constraints.base import Constraint
 from jemba_core.portfolio.models import (
     ConstraintResult,
     PortfolioCandidate,
@@ -7,7 +7,6 @@ from jemba_core.portfolio.models import (
 
 
 class ExposureConstraint(Constraint):
-
     def evaluate(
         self,
         candidate: PortfolioCandidate,

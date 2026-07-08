@@ -1,4 +1,4 @@
-﻿from jemba_core.backtest.equity_curve import EquityCurve
+from jemba_core.backtest.equity_curve import EquityCurve
 from jemba_core.backtest.metrics import Metrics
 
 

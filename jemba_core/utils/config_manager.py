@@ -1,4 +1,4 @@
-﻿from config.settings import (
+from config.settings import (
     APP_NAME,
     BINGX_API_KEY,
     BINGX_SECRET,

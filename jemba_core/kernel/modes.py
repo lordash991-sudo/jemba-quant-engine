@@ -1,4 +1,4 @@
-﻿PAPER = "paper"
+PAPER = "paper"
 LIVE = "live"
 BACKTEST = "backtest"
 SIMULATION = "simulation"

@@ -1,8 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 
 class OrderExecutor:
-
     def __init__(self, broker, storage=None):
         self.broker = broker
         self.storage = storage

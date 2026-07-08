@@ -1,5 +1,4 @@
-﻿class LiveTradingEngine:
-
+class LiveTradingEngine:
     def __init__(
         self,
         market_provider,

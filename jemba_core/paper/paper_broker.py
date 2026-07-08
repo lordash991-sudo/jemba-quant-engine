@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -23,7 +23,6 @@ class PaperPosition:
 
 
 class PaperBroker:
-
     def __init__(self, account: PaperAccount | None = None):
         self.account = account or PaperAccount()
         self.positions = {}

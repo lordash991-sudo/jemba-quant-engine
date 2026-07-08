@@ -18,7 +18,6 @@ class WalkForwardSplitter:
         start = 0
 
         while start + self.train_size + self.test_size <= total_rows:
-
             windows.append(
                 WalkForwardWindow(
                     train_start=start,

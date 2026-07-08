@@ -1,4 +1,4 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 from jemba_core.engine.live_trading_engine import LiveTradingEngine
 

@@ -1,4 +1,4 @@
-﻿from jemba_core.events.trade_signal_event import TradeSignalEvent
+from jemba_core.events.trade_signal_event import TradeSignalEvent
 
 
 def test_trade_signal_event():

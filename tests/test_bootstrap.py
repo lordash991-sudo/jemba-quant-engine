@@ -1,4 +1,4 @@
-﻿from jemba_core.kernel.bootstrap import Bootstrap
+from jemba_core.kernel.bootstrap import Bootstrap
 from jemba_core.providers.bingx_provider import BingXProvider
 
 

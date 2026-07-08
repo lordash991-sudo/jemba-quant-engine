@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -10,7 +10,7 @@ from jemba_core.database.sqlite_storage import SQLiteStorage
 
 storage = SQLiteStorage()
 
-query = '''
+query = """
 SELECT
     symbol,
     timeframe,
@@ -20,7 +20,7 @@ SELECT
 FROM candles
 GROUP BY symbol, timeframe
 ORDER BY symbol
-'''
+"""
 
 df = pd.read_sql(query, storage.engine)
 

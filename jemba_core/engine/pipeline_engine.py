@@ -1,8 +1,7 @@
-﻿from jemba_core.engine.trading_opportunity import TradingOpportunity
+from jemba_core.engine.trading_opportunity import TradingOpportunity
 
 
 class PipelineEngine:
-
     def __init__(
         self,
         feature_engine,

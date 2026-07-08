@@ -1,4 +1,4 @@
-﻿from jemba_core.walkforward.evaluator import WalkForwardEvaluator
+from jemba_core.walkforward.evaluator import WalkForwardEvaluator
 from jemba_core.walkforward.splitter import WalkForwardSplitter
 
 

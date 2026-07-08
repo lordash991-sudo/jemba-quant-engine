@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -12,7 +12,6 @@ class PortfolioState:
 
 
 class PortfolioManager:
-
     def __init__(
         self,
         max_positions: int = 5,
@@ -30,9 +29,7 @@ class PortfolioManager:
         if state.open_positions >= self.max_positions:
             return False
 
-        if (state.used_margin + position_size) > (
-            state.capital * self.max_margin_pct
-        ):
+        if (state.used_margin + position_size) > (state.capital * self.max_margin_pct):
             return False
 
         return True

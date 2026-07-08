@@ -1,10 +1,9 @@
-﻿from dataclasses import dataclass
+from dataclasses import dataclass
 from datetime import datetime
 
 
 @dataclass
 class PaperPosition:
-
     symbol: str
 
     side: str
@@ -42,19 +41,9 @@ class PaperPosition:
         self.status = "CLOSED"
 
         if self.side == "BUY":
-
-            self.pnl = (
-                (exit_price - self.entry)
-                * self.quantity
-                - commission
-            )
+            self.pnl = (exit_price - self.entry) * self.quantity - commission
 
         else:
-
-            self.pnl = (
-                (self.entry - exit_price)
-                * self.quantity
-                - commission
-            )
+            self.pnl = (self.entry - exit_price) * self.quantity - commission
 
         return self.pnl

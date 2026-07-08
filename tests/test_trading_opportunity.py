@@ -1,4 +1,4 @@
-﻿from jemba_core.engine.trading_opportunity import TradingOpportunity
+from jemba_core.engine.trading_opportunity import TradingOpportunity
 
 
 def test_trading_opportunity_tradeable():

@@ -1,11 +1,10 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import joblib
 import pandas as pd
 
 
 class PredictorEngine:
-
     def __init__(self, model=None):
         self.model = model
 

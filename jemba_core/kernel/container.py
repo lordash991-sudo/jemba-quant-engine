@@ -1,5 +1,4 @@
-﻿class Container:
-
+class Container:
     def __init__(self):
         self.config = None
         self.provider = None

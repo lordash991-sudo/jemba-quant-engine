@@ -1,4 +1,4 @@
-﻿from types import SimpleNamespace
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 from jemba_core.database.sqlite_storage import SQLiteStorage
@@ -9,9 +9,7 @@ from jemba_core.paper.paper_engine import PaperEngine
 def test_trade_pipeline_saves_to_sqlite(tmp_path):
     broker = MagicMock()
 
-    broker.place_order.return_value = {
-        "status": "FILLED"
-    }
+    broker.place_order.return_value = {"status": "FILLED"}
 
     trade_engine = MagicMock()
 

@@ -1,4 +1,4 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 import pandas as pd
 
@@ -7,12 +7,14 @@ from jemba_core.ai.predictor_engine import PredictorEngine
 
 def dataframe():
 
-    return pd.DataFrame({
-        "ema_20":[1,2,3],
-        "ema_50":[2,3,4],
-        "atr_14":[1.1,1.2,1.3],
-        "rsi_14":[40,55,70],
-    })
+    return pd.DataFrame(
+        {
+            "ema_20": [1, 2, 3],
+            "ema_50": [2, 3, 4],
+            "atr_14": [1.1, 1.2, 1.3],
+            "rsi_14": [40, 55, 70],
+        }
+    )
 
 
 def test_without_model():
@@ -28,12 +30,12 @@ def test_prediction():
 
     model = MagicMock()
 
-    model.predict.return_value = [1,0,1]
+    model.predict.return_value = [1, 0, 1]
 
     model.predict_proba.return_value = [
-        [0.20,0.80],
-        [0.70,0.30],
-        [0.10,0.90],
+        [0.20, 0.80],
+        [0.70, 0.30],
+        [0.10, 0.90],
     ]
 
     engine = PredictorEngine(model)
@@ -51,12 +53,12 @@ def test_latest():
 
     model = MagicMock()
 
-    model.predict.return_value = [1,0,1]
+    model.predict.return_value = [1, 0, 1]
 
     model.predict_proba.return_value = [
-        [0.20,0.80],
-        [0.70,0.30],
-        [0.10,0.90],
+        [0.20, 0.80],
+        [0.70, 0.30],
+        [0.10, 0.90],
     ]
 
     engine = PredictorEngine(model)

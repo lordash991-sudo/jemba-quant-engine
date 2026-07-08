@@ -1,4 +1,4 @@
-﻿from jemba_core.risk.models import RiskRequest
+from jemba_core.risk.models import RiskRequest
 from jemba_core.risk.risk_engine import RiskEngine
 
 

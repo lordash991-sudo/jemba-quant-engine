@@ -1,4 +1,4 @@
-﻿from jemba_core.portfolio_manager import (
+from jemba_core.portfolio_manager import (
     PortfolioManager,
     PortfolioState,
 )
@@ -14,7 +14,7 @@ def test_can_open():
         open_positions=1,
     )
 
-    assert manager.can_open(state,1000)
+    assert manager.can_open(state, 1000)
 
 
 def test_margin_limit():
@@ -27,7 +27,7 @@ def test_margin_limit():
         open_positions=1,
     )
 
-    assert not manager.can_open(state,500)
+    assert not manager.can_open(state, 500)
 
 
 def test_position_limit():
@@ -41,7 +41,7 @@ def test_position_limit():
         max_positions=2,
     )
 
-    assert not manager.can_open(state,100)
+    assert not manager.can_open(state, 100)
 
 
 def test_allocate():

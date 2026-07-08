@@ -1,4 +1,4 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 from jemba_core.kernel.kernel import JembaKernel
 from jemba_core.pipeline.pipeline_engine import PipelineEngine

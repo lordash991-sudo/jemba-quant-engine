@@ -1,4 +1,4 @@
-﻿import json
+import json
 
 from jemba_core.paper.paper_report import PaperReport
 
@@ -6,10 +6,12 @@ from jemba_core.paper.paper_report import PaperReport
 def test_save_summary(tmp_path):
     report = PaperReport(output_dir=tmp_path)
 
-    path = report.save_summary({
-        "balance": 10100,
-        "trades": 2,
-    })
+    path = report.save_summary(
+        {
+            "balance": 10100,
+            "trades": 2,
+        }
+    )
 
     assert path.exists()
 
@@ -22,13 +24,15 @@ def test_save_summary(tmp_path):
 def test_save_trades(tmp_path):
     report = PaperReport(output_dir=tmp_path)
 
-    path = report.save_trades([
-        {
-            "symbol": "BTC-USDT",
-            "side": "BUY",
-            "pnl": 100,
-        }
-    ])
+    path = report.save_trades(
+        [
+            {
+                "symbol": "BTC-USDT",
+                "side": "BUY",
+                "pnl": 100,
+            }
+        ]
+    )
 
     assert path.exists()
 

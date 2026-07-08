@@ -3,7 +3,6 @@ from jemba_core.providers.bingx_provider import BingXProvider
 
 
 class MarketDataManager:
-
     def __init__(self):
         self.provider = BingXProvider()
         self.storage = SQLiteStorage()
@@ -15,7 +14,7 @@ class MarketDataManager:
         return {
             "downloaded": len(candles),
             "inserted": inserted,
-            "database": self.storage.count_candles()
+            "database": self.storage.count_candles(),
         }
 
     def total(self):

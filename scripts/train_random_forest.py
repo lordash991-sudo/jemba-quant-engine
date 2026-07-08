@@ -10,11 +10,7 @@ from jemba_core.ai.trainer import Trainer
 
 builder = DatasetBuilder()
 
-df = builder.build(
-    symbol="BTC-USDT",
-    timeframe="1h",
-    limit=5000
-)
+df = builder.build(symbol="BTC-USDT", timeframe="1h", limit=5000)
 
 df = LabelGenerator.generate(df)
 

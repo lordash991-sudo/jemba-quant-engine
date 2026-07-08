@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -25,7 +25,7 @@ def row_to_candle(row, symbol):
         high=float(row["high"]),
         low=float(row["low"]),
         close=float(row["close"]),
-        volume=float(row["volume"])
+        volume=float(row["volume"]),
     )
 
 
@@ -40,10 +40,7 @@ for file in files:
     symbol = symbol_from_filename(file)
     df = pd.read_csv(file)
 
-    candles = [
-        row_to_candle(row, symbol)
-        for _, row in df.iterrows()
-    ]
+    candles = [row_to_candle(row, symbol) for _, row in df.iterrows()]
 
     inserted = storage.save_candles(candles)
 

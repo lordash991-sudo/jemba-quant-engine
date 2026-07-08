@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 
 from jemba_core.database.sqlite_storage import SQLiteStorage
 

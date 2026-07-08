@@ -1,4 +1,4 @@
-﻿from jemba_core.ai.risk_engine import RiskEngine
+from jemba_core.ai.risk_engine import RiskEngine
 
 
 def test_risk_amount():

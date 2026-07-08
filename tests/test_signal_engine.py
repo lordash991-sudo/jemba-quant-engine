@@ -1,4 +1,4 @@
-﻿from jemba_core.ai.confidence_engine import ConfidenceResult
+from jemba_core.ai.confidence_engine import ConfidenceResult
 from jemba_core.ai.signal_engine import SignalEngine
 
 

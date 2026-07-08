@@ -1,4 +1,4 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 from jemba_core.paper.paper_execution_engine import PaperExecutionEngine
 

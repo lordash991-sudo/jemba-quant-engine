@@ -1,4 +1,4 @@
-﻿from jemba_core.kernel.container import Container
+from jemba_core.kernel.container import Container
 from jemba_core.kernel.modes import BACKTEST, LIVE, PAPER, SIMULATION, VALID_MODES
 
 

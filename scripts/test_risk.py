@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -7,10 +7,7 @@ sys.path.append(str(ROOT))
 from jemba_core.risk.risk_manager import RiskConfig, RiskManager
 
 cfg = RiskConfig(
-    account_balance=1000,
-    risk_percent=1,
-    stop_loss_percent=1.5,
-    take_profit_percent=3
+    account_balance=1000, risk_percent=1, stop_loss_percent=1.5, take_profit_percent=3
 )
 
 risk = RiskManager(cfg)

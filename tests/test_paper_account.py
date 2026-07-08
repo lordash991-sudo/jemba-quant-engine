@@ -1,4 +1,4 @@
-﻿from jemba_core.paper.paper_account import PaperAccount
+from jemba_core.paper.paper_account import PaperAccount
 
 
 def test_initial_state():

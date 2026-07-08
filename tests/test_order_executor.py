@@ -1,4 +1,4 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 from jemba_core.database.sqlite_storage import SQLiteStorage
 from jemba_core.execution.order_executor import OrderExecutor
@@ -13,9 +13,7 @@ class Trade:
 def test_execute_order():
     broker = MagicMock()
 
-    broker.place_order.return_value = {
-        "status": "FILLED"
-    }
+    broker.place_order.return_value = {"status": "FILLED"}
 
     executor = OrderExecutor(broker)
 
@@ -33,9 +31,7 @@ def test_execute_order():
 def test_execute_order_saves_trade(tmp_path):
     broker = MagicMock()
 
-    broker.place_order.return_value = {
-        "status": "FILLED"
-    }
+    broker.place_order.return_value = {"status": "FILLED"}
 
     storage = SQLiteStorage(tmp_path / "test.db")
 

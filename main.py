@@ -1,4 +1,4 @@
-﻿import logging
+import logging
 import signal
 import sys
 import warnings
@@ -10,13 +10,11 @@ warnings.filterwarnings("ignore", category=ResourceWarning)
 
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
+    level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s"
 )
 
 
 class QuantEngine:
-
     def __init__(self, mode="paper"):
         self.mode = mode
         self.scheduler = Scheduler()

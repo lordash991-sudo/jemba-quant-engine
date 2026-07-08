@@ -1,4 +1,4 @@
-﻿from dataclasses import dataclass
+from dataclasses import dataclass
 
 
 @dataclass
@@ -9,18 +9,11 @@ class RankedSignal:
 
 
 class SignalRanker:
-
     def rank(self, signals):
 
-        valid = [
-            s for s in signals
-            if s is not None
-        ]
+        valid = [s for s in signals if s is not None]
 
-        valid.sort(
-            key=lambda x: x.confidence,
-            reverse=True
-        )
+        valid.sort(key=lambda x: x.confidence, reverse=True)
 
         return valid
 

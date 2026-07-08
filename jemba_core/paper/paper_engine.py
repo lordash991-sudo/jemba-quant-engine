@@ -1,8 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 
 class PaperEngine:
-
     def __init__(
         self,
         trade_engine,

@@ -1,4 +1,4 @@
-﻿from jemba_core.features.feature_engine import FeatureEngine
+from jemba_core.features.feature_engine import FeatureEngine
 
 
 def sample_candles(n=250):

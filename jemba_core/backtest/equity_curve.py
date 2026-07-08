@@ -1,5 +1,4 @@
-﻿class EquityCurve:
-
+class EquityCurve:
     @staticmethod
     def build(initial_balance, trades):
         equity = [initial_balance]

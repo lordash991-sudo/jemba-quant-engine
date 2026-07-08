@@ -1,4 +1,4 @@
-﻿from jemba_core.backtest.backtester import Backtester
+from jemba_core.backtest.backtester import Backtester
 from jemba_core.backtest.metrics import Metrics
 from jemba_core.backtest.trade import Trade
 

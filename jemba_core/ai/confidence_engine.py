@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -11,7 +11,6 @@ class ConfidenceResult:
 
 
 class ConfidenceEngine:
-
     def __init__(self, min_probability: float = 0.55):
         self.min_probability = min_probability
 
@@ -22,8 +21,7 @@ class ConfidenceEngine:
             confidence = 0.0
         else:
             confidence = (
-                (probability - self.min_probability)
-                / (1 - self.min_probability)
+                (probability - self.min_probability) / (1 - self.min_probability)
             ) * 100
 
         confidence = max(0.0, min(100.0, confidence))

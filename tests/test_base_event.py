@@ -1,11 +1,8 @@
-﻿from jemba_core.events.base_event import BaseEvent
+from jemba_core.events.base_event import BaseEvent
 
 
 def test_create_event():
-    event = BaseEvent(
-        event_type="Prediction",
-        source="Predictor"
-    )
+    event = BaseEvent(event_type="Prediction", source="Predictor")
 
     assert event.event_type == "Prediction"
     assert event.source == "Predictor"

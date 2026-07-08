@@ -1,4 +1,4 @@
-﻿from jemba_core.kernel.kernel import JembaKernel
+from jemba_core.kernel.kernel import JembaKernel
 
 
 def test_kernel_start():

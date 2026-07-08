@@ -1,4 +1,4 @@
-﻿from jemba_core.signals.signal_ranker import RankedSignal, SignalRanker
+from jemba_core.signals.signal_ranker import RankedSignal, SignalRanker
 
 
 def test_rank_order():
@@ -6,15 +6,10 @@ def test_rank_order():
     ranker = SignalRanker()
 
     signals = [
-
-        RankedSignal("BTC",0.82),
-
-        RankedSignal("ETH",0.71),
-
-        RankedSignal("DOGE",0.95),
-
-        RankedSignal("SOL",0.88)
-
+        RankedSignal("BTC", 0.82),
+        RankedSignal("ETH", 0.71),
+        RankedSignal("DOGE", 0.95),
+        RankedSignal("SOL", 0.88),
     ]
 
     ranked = ranker.rank(signals)
@@ -30,13 +25,9 @@ def test_best_signal():
     ranker = SignalRanker()
 
     signals = [
-
-        RankedSignal("BTC",0.81),
-
-        RankedSignal("ETH",0.92),
-
-        RankedSignal("XRP",0.76)
-
+        RankedSignal("BTC", 0.81),
+        RankedSignal("ETH", 0.92),
+        RankedSignal("XRP", 0.76),
     ]
 
     best = ranker.best(signals)
@@ -56,17 +47,7 @@ def test_ignore_none():
 
     ranker = SignalRanker()
 
-    signals = [
-
-        None,
-
-        RankedSignal("BTC",0.60),
-
-        None,
-
-        RankedSignal("SOL",0.80)
-
-    ]
+    signals = [None, RankedSignal("BTC", 0.60), None, RankedSignal("SOL", 0.80)]
 
     ranked = ranker.rank(signals)
 

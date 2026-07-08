@@ -1,9 +1,8 @@
-﻿from jemba_core.ai.predictor import Predictor
+from jemba_core.ai.predictor import Predictor
 from jemba_core.features.feature_engine import FeatureEngine
 
 
 class StrategyEngine:
-
     BUY = "BUY"
     SELL = "SELL"
     HOLD = "HOLD"

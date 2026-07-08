@@ -1,4 +1,4 @@
-﻿from jemba_core.portfolio.constraints.capital import CapitalConstraint
+from jemba_core.portfolio.constraints.capital import CapitalConstraint
 from jemba_core.portfolio.constraints.correlation import CorrelationConstraint
 from jemba_core.portfolio.constraints.exposure import ExposureConstraint
 from jemba_core.portfolio.models import PortfolioCandidate, PortfolioState

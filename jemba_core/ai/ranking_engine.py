@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -14,7 +14,6 @@ class RankedSignal:
 
 
 class RankingEngine:
-
     def score(self, signal: SignalResult, volatility: float = 1.0) -> float:
 
         base = signal.confidence
@@ -32,7 +31,6 @@ class RankingEngine:
         ranked = []
 
         for symbol, signal, volatility in signals:
-
             if signal.action == "HOLD":
                 continue
 

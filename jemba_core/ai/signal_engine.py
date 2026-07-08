@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -14,7 +14,6 @@ class SignalResult:
 
 
 class SignalEngine:
-
     def __init__(self, min_confidence: float = 60.0):
         self.min_confidence = min_confidence
 

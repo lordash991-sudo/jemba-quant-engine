@@ -1,4 +1,4 @@
-﻿import time
+import time
 
 from jemba_core.engine.quant_orchestrator import QuantOrchestrator
 from jemba_core.events.event_bus import EventBus
@@ -11,7 +11,6 @@ from jemba_core.risk.risk_engine import RiskEngine
 
 
 class LiveEngine:
-
     def __init__(self):
         self.event_bus = EventBus()
 

@@ -1,10 +1,9 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import pandas as pd
 
 
 class FeatureEngine:
-
     def __init__(self):
         pass
 

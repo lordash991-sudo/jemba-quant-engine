@@ -1,5 +1,4 @@
-﻿class MarketUpdater:
-
+class MarketUpdater:
     def __init__(
         self,
         market_provider=None,
@@ -31,12 +30,14 @@
             saved = self.candle_repository.save(candle)
 
             if self.event_bus is not None:
-                self.event_bus.publish({
-                    "event_type": "MarketUpdated",
-                    "symbol": symbol,
-                    "timeframe": timeframe,
-                    "candle": candle,
-                })
+                self.event_bus.publish(
+                    {
+                        "event_type": "MarketUpdated",
+                        "symbol": symbol,
+                        "timeframe": timeframe,
+                        "candle": candle,
+                    }
+                )
 
             return bool(saved)
 

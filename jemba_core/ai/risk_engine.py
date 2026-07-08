@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -14,7 +14,6 @@ class RiskResult:
 
 
 class RiskEngine:
-
     def __init__(
         self,
         risk_per_trade: float = 0.01,

@@ -1,8 +1,7 @@
-﻿from jemba_core.ai.ensemble import EnsembleFactory
+from jemba_core.ai.ensemble import EnsembleFactory
 
 
 class EnsembleInference:
-
     def __init__(self):
 
         self.model = EnsembleFactory.build()

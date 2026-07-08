@@ -1,4 +1,4 @@
-﻿from unittest.mock import MagicMock
+from unittest.mock import MagicMock
 
 from jemba_core.ai.predictor_engine import PredictorEngine
 from jemba_core.features.feature_engine import FeatureEngine

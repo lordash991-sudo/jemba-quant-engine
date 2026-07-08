@@ -1,5 +1,4 @@
-﻿class PortfolioManager:
-
+class PortfolioManager:
     def __init__(
         self,
         account_balance: float = 10000.0,

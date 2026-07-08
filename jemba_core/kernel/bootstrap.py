@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 
 import yaml
 
@@ -7,7 +7,6 @@ from jemba_core.providers.bingx_provider import BingXProvider
 
 
 class Bootstrap:
-
     def __init__(self, config_path="config/config.yaml"):
         self.config_path = Path(config_path)
 

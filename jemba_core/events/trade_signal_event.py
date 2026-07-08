@@ -1,8 +1,7 @@
-﻿from jemba_core.events.base_event import BaseEvent
+from jemba_core.events.base_event import BaseEvent
 
 
 class TradeSignalEvent(BaseEvent):
-
     def __init__(
         self,
         source: str,

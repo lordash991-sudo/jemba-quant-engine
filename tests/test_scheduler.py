@@ -1,4 +1,4 @@
-﻿from jemba_core.engine.scheduler import Scheduler
+from jemba_core.engine.scheduler import Scheduler
 
 
 def test_scheduler_run_once():

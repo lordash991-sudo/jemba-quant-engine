@@ -1,4 +1,4 @@
-﻿from jemba_core.risk.models import RiskDecision, RiskRequest
+from jemba_core.risk.models import RiskDecision, RiskRequest
 from jemba_core.risk.position_sizer import PositionSizer
 
 

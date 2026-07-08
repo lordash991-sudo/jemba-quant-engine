@@ -1,4 +1,4 @@
-﻿from jemba_core.paper.paper_statistics import PaperStatistics
+from jemba_core.paper.paper_statistics import PaperStatistics
 
 
 def test_paper_statistics():

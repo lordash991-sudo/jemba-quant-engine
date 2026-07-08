@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
@@ -10,7 +10,6 @@ from jemba_core.portfolio.models import (
 
 
 class Constraint(ABC):
-
     @abstractmethod
     def evaluate(
         self,

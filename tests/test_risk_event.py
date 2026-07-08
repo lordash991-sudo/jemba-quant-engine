@@ -1,4 +1,4 @@
-﻿from jemba_core.events.risk_event import RiskEvent
+from jemba_core.events.risk_event import RiskEvent
 
 
 def test_risk_event():

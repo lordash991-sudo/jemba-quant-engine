@@ -1,4 +1,4 @@
-﻿from jemba_core.ai.confidence_engine import ConfidenceEngine
+from jemba_core.ai.confidence_engine import ConfidenceEngine
 
 
 def test_low_probability():

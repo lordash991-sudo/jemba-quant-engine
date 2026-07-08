@@ -1,5 +1,4 @@
-﻿class PaperExecutionEngine:
-
+class PaperExecutionEngine:
     def __init__(
         self,
         broker_executor,

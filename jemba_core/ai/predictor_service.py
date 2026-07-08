@@ -1,11 +1,10 @@
-﻿from pathlib import Path
+from pathlib import Path
 
 from jemba_core.ai.predictor import Predictor
 from jemba_core.events.prediction_event import PredictionEvent
 
 
 class PredictorService:
-
     def __init__(self, model_dir="models/trained"):
         self.model_dir = Path(model_dir)
         self.predictors = {}
