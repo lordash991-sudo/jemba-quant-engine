@@ -20,6 +20,9 @@ def test_backtester():
     assert report["average_win"] == 110
     assert report["average_loss"] == -50
     assert report["expectancy"] == 56.66666666666666
+    assert report["sortino_ratio"] > 0
+    assert report["calmar_ratio"] > 0
+    assert report["recovery_factor"] > 0
 
 
 def test_max_drawdown():
@@ -34,3 +37,19 @@ def test_profit_factor():
 
 def test_sharpe_ratio_is_calculated():
     assert Metrics.sharpe_ratio(sample_trades()) > 0
+
+
+def test_sortino_ratio_is_calculated():
+    assert Metrics.sortino_ratio(sample_trades()) > 0
+
+
+def test_calmar_ratio_is_calculated():
+    equity = [10000, 10100, 10050, 10220]
+
+    assert Metrics.calmar_ratio(equity, sample_trades()) > 0
+
+
+def test_recovery_factor_is_calculated():
+    equity = [10000, 10100, 10050, 10220]
+
+    assert Metrics.recovery_factor(equity) > 0

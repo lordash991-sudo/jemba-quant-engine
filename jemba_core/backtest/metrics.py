@@ -63,7 +63,6 @@ class Metrics:
 
         returns = [trade.pnl_percent / 100 for trade in trades]
         avg_return = sum(returns) / len(returns)
-
         variance = sum((r - avg_return) ** 2 for r in returns) / (len(returns) - 1)
         std_dev = math.sqrt(variance)
 
@@ -71,3 +70,48 @@ class Metrics:
             return 0.0
 
         return avg_return / std_dev
+
+    @staticmethod
+    def sortino_ratio(trades):
+        if len(trades) < 2:
+            return 0.0
+
+        returns = [trade.pnl_percent / 100 for trade in trades]
+        avg_return = sum(returns) / len(returns)
+        downside = [r for r in returns if r < 0]
+
+        if not downside:
+            return float("inf")
+
+        downside_variance = sum(r**2 for r in downside) / len(downside)
+        downside_deviation = math.sqrt(downside_variance)
+
+        if downside_deviation == 0:
+            return 0.0
+
+        return avg_return / downside_deviation
+
+    @staticmethod
+    def calmar_ratio(equity, trades):
+        max_dd = Metrics.max_drawdown(equity)
+
+        if max_dd == 0:
+            return float("inf")
+
+        total_return = (equity[-1] - equity[0]) / equity[0]
+        return total_return / max_dd
+
+    @staticmethod
+    def recovery_factor(equity):
+        max_dd = Metrics.max_drawdown(equity)
+
+        if max_dd == 0:
+            return float("inf")
+
+        net_profit = equity[-1] - equity[0]
+        max_dd_money = equity[0] * max_dd
+
+        if max_dd_money == 0:
+            return float("inf")
+
+        return net_profit / max_dd_money

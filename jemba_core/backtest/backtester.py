@@ -26,6 +26,9 @@ class Backtester:
             "expectancy": Metrics.expectancy(trades),
             "max_drawdown": Metrics.max_drawdown(equity),
             "sharpe_ratio": Metrics.sharpe_ratio(trades),
+            "sortino_ratio": Metrics.sortino_ratio(trades),
+            "calmar_ratio": Metrics.calmar_ratio(equity, trades),
+            "recovery_factor": Metrics.recovery_factor(equity),
             "trades": len(trades),
             "equity": equity,
         }
