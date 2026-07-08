@@ -1,42 +1,19 @@
-# Virtual Environment
-.venv/
-venv/
-
-# Python
+logs/
+models/
+database/
+.coverage
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
 *.pyd
-
-# Logs
-*.log
-logs/
-
-# Environment variables
 .env
-
-# VS Code
+.venv/
 .vscode/
+.idea/
+htmlcov/
+coverage.xml
 
-# Jupyter
-.ipynb_checkpoints/
-
-# Build
-build/
-dist/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Database
-*.db
-*.sqlite3
-
-# Model checkpoints
-models/checkpoints/
-models/trained/
-
-# Temporary
-*.tmp
-*.bak
+database/*.db

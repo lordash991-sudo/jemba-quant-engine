@@ -1,8 +1,14 @@
-from config.settings import *
+﻿from config.settings import (
+    APP_NAME,
+    BINGX_API_KEY,
+    BINGX_SECRET,
+    DATABASE_NAME,
+    DEFAULT_INTERVAL,
+    DEFAULT_SYMBOL,
+)
 
 
 class ConfigManager:
-
     @staticmethod
     def app_name():
         return APP_NAME

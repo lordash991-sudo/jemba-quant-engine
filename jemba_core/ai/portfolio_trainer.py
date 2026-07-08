@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 
 import joblib
 import pandas as pd
@@ -79,7 +79,10 @@ class PortfolioTrainer:
             "importance": model.feature_importances_
         }).sort_values("importance", ascending=False)
 
-        importance_path = Path("models/trained") / f"{safe_symbol}_feature_importance.csv"
+        importance_path = (
+    Path("models/trained")
+    / f"{safe_symbol}_feature_importance.csv"
+)
         importance.to_csv(importance_path, index=False)
 
         return {

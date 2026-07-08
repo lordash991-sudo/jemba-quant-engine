@@ -36,7 +36,7 @@ def test_multiple_trades(tmp_path):
 
     db.create_tables()
 
-    for i in range(5):
+    for _i in range(5):
         db.insert_trade(
             "BTCUSDT",
             "LONG",

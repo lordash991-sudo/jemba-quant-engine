@@ -3,11 +3,12 @@ from sqlalchemy import text
 
 
 class CandleRepository:
-
     def __init__(self, storage):
         self.storage = storage
 
-    def load_candles(self, symbol: str, timeframe: str, limit: int = 500) -> pd.DataFrame:
+    def load_candles(
+        self, symbol: str, timeframe: str, limit: int = 500
+    ) -> pd.DataFrame:
         query = text("""
             SELECT
                 symbol,

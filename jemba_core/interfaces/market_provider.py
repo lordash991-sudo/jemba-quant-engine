@@ -5,7 +5,9 @@ from jemba_core.common.candle import Candle
 
 class MarketProvider(ABC):
     @abstractmethod
-    def get_candles(self, symbol: str, timeframe: str, limit: int = 500) -> list[Candle]:
+    def get_candles(
+        self, symbol: str, timeframe: str, limit: int = 500
+    ) -> list[Candle]:
         pass
 
     @abstractmethod
