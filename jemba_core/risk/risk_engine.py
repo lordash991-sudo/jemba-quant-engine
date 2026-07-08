@@ -1,42 +1,40 @@
-﻿class RiskEngine:
+﻿from jemba_core.risk.models import RiskDecision, RiskRequest
+from jemba_core.risk.position_sizer import PositionSizer
 
+
+class RiskEngine:
     def __init__(
         self,
-        min_confidence: float = 0.70,
-        max_daily_drawdown: float = 0.05,
-        max_consecutive_losses: int = 3,
+        max_risk_per_trade: float = 0.02,
+        min_confidence: float = 0.75,
+        max_open_positions: int = 5,
     ):
-        self.min_confidence = float(min_confidence)
-        self.max_daily_drawdown = float(max_daily_drawdown)
-        self.max_consecutive_losses = int(max_consecutive_losses)
+        self.max_risk_per_trade = max_risk_per_trade
+        self.min_confidence = min_confidence
+        self.max_open_positions = max_open_positions
+        self.position_sizer = PositionSizer()
 
-    def validate(
-        self,
-        portfolio,
-        confidence: float,
-        position_size: float,
-        has_open_position: bool = False,
-        consecutive_losses: int = 0,
-        daily_drawdown: float = 0.0,
-    ):
-        reasons = []
+    def evaluate(self, request: RiskRequest) -> RiskDecision:
+        if request.account_balance <= 0:
+            return RiskDecision(False, "NO_BALANCE")
 
-        if confidence < self.min_confidence:
-            reasons.append("LOW_CONFIDENCE")
+        if request.confidence < self.min_confidence:
+            return RiskDecision(False, "LOW_CONFIDENCE")
 
-        if consecutive_losses >= self.max_consecutive_losses:
-            reasons.append("MAX_CONSECUTIVE_LOSSES")
+        if request.open_positions >= self.max_open_positions:
+            return RiskDecision(False, "MAX_OPEN_POSITIONS")
 
-        if daily_drawdown >= self.max_daily_drawdown:
-            reasons.append("MAX_DAILY_DRAWDOWN")
+        position_size = self.position_sizer.calculate(
+            request,
+            self.max_risk_per_trade,
+        )
 
-        if has_open_position:
-            reasons.append("POSITION_ALREADY_OPEN")
+        max_loss = request.account_balance * self.max_risk_per_trade
 
-        if position_size <= 0:
-            reasons.append("INVALID_POSITION_SIZE")
-
-        return {
-            "approved": len(reasons) == 0,
-            "reasons": reasons,
-        }
+        return RiskDecision(
+            approved=True,
+            reason="APPROVED",
+            risk_percent=self.max_risk_per_trade,
+            position_size=position_size,
+            max_loss=max_loss,
+        )
