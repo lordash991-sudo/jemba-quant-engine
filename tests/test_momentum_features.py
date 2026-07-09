@@ -46,3 +46,7 @@ def test_feature_builder_adds_trend_and_momentum():
     assert "rsi_14" in result.columns
     assert "roc_10" in result.columns
     assert "momentum_10" in result.columns
+    assert "macd" in result.columns
+    assert "macd_signal" in result.columns
+    assert "macd_histogram" in result.columns
+    
