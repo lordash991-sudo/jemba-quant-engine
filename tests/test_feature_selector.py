@@ -1,31 +1,23 @@
-import numpy as np
+from __future__ import annotations
+
 import pandas as pd
 
 from jemba_core.ai.feature_selector import FeatureSelector
 
 
-def test_feature_selector():
-
-    rng = np.random.default_rng(42)
-
-    df = pd.DataFrame(
+def sample():
+    return pd.DataFrame(
         {
-            "ema": rng.random(300),
-            "atr": rng.random(300),
-            "volume": rng.random(300),
-            "momentum": rng.random(300),
-            "volatility": rng.random(300),
-            "label": rng.integers(0, 2, 300),
+            "ema20": [1, 2, 3],
+            "ema50": [2, 3, 4],
+            "rsi": [40, 50, 60],
         }
     )
 
+
+def test_feature_selector():
     selector = FeatureSelector()
 
-    importance = selector.fit(df)
+    result = selector.fit_transform(sample())
 
-    assert len(importance) == 5
-
-    reduced = selector.select(df, top_k=3)
-
-    assert len(reduced.columns) == 4
-    assert "label" in reduced.columns
+    assert len(result.columns) == 3

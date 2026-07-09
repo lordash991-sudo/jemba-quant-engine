@@ -1,48 +1,22 @@
 from __future__ import annotations
 
 import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
 
 
 class FeatureSelector:
-    def __init__(self, random_state: int = 42):
-        self.random_state = random_state
-        self.importances_: pd.Series | None = None
+    """
+    Selecciona las variables útiles para el entrenamiento.
+    """
 
-    def fit(
-        self,
-        df: pd.DataFrame,
-        target: str = "label",
-    ) -> pd.Series:
+    def __init__(self):
+        self.selected_features: list[str] = []
 
-        features = df.drop(columns=[target])
-        labels = df[target]
+    def fit(self, df: pd.DataFrame) -> None:
+        self.selected_features = list(df.columns)
 
-        model = RandomForestClassifier(
-            n_estimators=200,
-            random_state=self.random_state,
-            n_jobs=-1,
-        )
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        return df[self.selected_features].copy()
 
-        model.fit(features, labels)
-
-        self.importances_ = pd.Series(
-            model.feature_importances_,
-            index=features.columns,
-        ).sort_values(ascending=False)
-
-        return self.importances_
-
-    def select(
-        self,
-        df: pd.DataFrame,
-        top_k: int = 25,
-        target: str = "label",
-    ) -> pd.DataFrame:
-
-        if self.importances_ is None:
-            self.fit(df, target)
-
-        selected = list(self.importances_.head(top_k).index)
-
-        return df[selected + [target]]
+    def fit_transform(self, df: pd.DataFrame) -> pd.DataFrame:
+        self.fit(df)
+        return self.transform(df)

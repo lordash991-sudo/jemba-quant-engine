@@ -11,10 +11,8 @@ class DatasetValidator:
             raise ValueError("DATASET_EMPTY")
 
         missing = [
-    column
-    for column in self.REQUIRED_COLUMNS
-    if column not in df.columns
-]
+            column for column in self.REQUIRED_COLUMNS if column not in df.columns
+        ]
 
         if missing:
             raise ValueError(f"MISSING_COLUMNS: {missing}")
