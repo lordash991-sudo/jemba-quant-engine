@@ -1,18 +1,23 @@
+﻿from __future__ import annotations
+
 import pandas as pd
 
 
 class LabelGenerator:
-    def generate(
-        self,
-        df: pd.DataFrame,
-        future_periods: int = 3,
-        threshold: float = 0.002,
-    ) -> pd.DataFrame:
+    def __init__(self, horizon: int = 1):
+        self.horizon = horizon
+
+    def transform(self, df: pd.DataFrame) -> pd.DataFrame:
         data = df.copy()
-        future_return = data["close"].shift(-future_periods) / data["close"] - 1
 
-        data["label"] = 0
-        data.loc[future_return > threshold, "label"] = 1
-        data.loc[future_return < -threshold, "label"] = -1
+        if "close" not in data.columns:
+            raise ValueError("Missing 'close' column")
 
-        return data.dropna().reset_index(drop=True)
+        data["future_close"] = data["close"].shift(-self.horizon)
+        data["future_return"] = (
+            data["future_close"] - data["close"]
+        ) / data["close"]
+
+        data["target"] = (data["future_return"] > 0).astype(int)
+
+        return data.dropna(subset=["future_close", "future_return"])
