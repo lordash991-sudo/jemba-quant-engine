@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import pandas as pd
 
@@ -10,7 +10,11 @@ class DatasetValidator:
         if df.empty:
             raise ValueError("DATASET_EMPTY")
 
-        missing = [column for column in self.REQUIRED_COLUMNS if column not in df.columns]
+        missing = [
+    column
+    for column in self.REQUIRED_COLUMNS
+    if column not in df.columns
+]
 
         if missing:
             raise ValueError(f"MISSING_COLUMNS: {missing}")

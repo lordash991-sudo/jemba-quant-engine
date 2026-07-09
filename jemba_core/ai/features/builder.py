@@ -2,8 +2,8 @@
 
 import pandas as pd
 
-from jemba_core.ai.features.trend import TrendFeatures
 from jemba_core.ai.features.momentum import MomentumFeatures
+from jemba_core.ai.features.trend import TrendFeatures
 from jemba_core.ai.features.volatility import VolatilityFeatures
 
 
