@@ -1,4 +1,4 @@
-﻿from datetime import datetime, timedelta
+from datetime import datetime, timedelta
 
 import pandas as pd
 
@@ -49,4 +49,3 @@ def test_feature_builder_adds_trend_and_momentum():
     assert "macd" in result.columns
     assert "macd_signal" in result.columns
     assert "macd_histogram" in result.columns
-    

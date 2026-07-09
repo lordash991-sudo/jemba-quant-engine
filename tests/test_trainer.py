@@ -1,8 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-
 from sklearn.ensemble import RandomForestClassifier
 
 from jemba_core.ai.trainer.trainer import ModelTrainer
@@ -17,7 +16,7 @@ def sample():
             "ema20": np.random.rand(300),
             "rsi": np.random.rand(300),
             "atr": np.random.rand(300),
-            "target": np.random.randint(0,2,300),
+            "target": np.random.randint(0, 2, 300),
         }
     )
 

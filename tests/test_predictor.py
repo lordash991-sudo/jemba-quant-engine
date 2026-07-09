@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import numpy as np
 import pandas as pd
@@ -11,62 +11,40 @@ def sample():
 
     np.random.seed(42)
 
-    return pd.DataFrame({
-
-        "a":np.random.randn(300),
-
-        "b":np.random.randn(300),
-
-        "target":np.random.randint(0,2,300)
-
-    })
+    return pd.DataFrame(
+        {
+            "a": np.random.randn(300),
+            "b": np.random.randn(300),
+            "target": np.random.randint(0, 2, 300),
+        }
+    )
 
 
 def test_prediction():
 
-    df=sample()
+    df = sample()
 
-    model=RandomForestEngine()
+    model = RandomForestEngine()
 
-    model.fit(
+    model.fit(df.drop(columns=["target"]), df["target"])
 
-        df.drop(columns=["target"]),
+    predictor = PredictionEngine(model)
 
-        df["target"]
+    probs = predictor.predict_proba(df.drop(columns=["target"]))
 
-    )
-
-    predictor=PredictionEngine(model)
-
-    probs=predictor.predict_proba(
-
-        df.drop(columns=["target"])
-
-    )
-
-    assert len(probs)==len(df)
+    assert len(probs) == len(df)
 
 
 def test_signal():
 
-    df=sample()
+    df = sample()
 
-    model=RandomForestEngine()
+    model = RandomForestEngine()
 
-    model.fit(
+    model.fit(df.drop(columns=["target"]), df["target"])
 
-        df.drop(columns=["target"]),
+    predictor = PredictionEngine(model)
 
-        df["target"]
+    signal = predictor.predict(df.drop(columns=["target"]))
 
-    )
-
-    predictor=PredictionEngine(model)
-
-    signal=predictor.predict(
-
-        df.drop(columns=["target"])
-
-    )
-
-    assert len(signal)==len(df)
+    assert len(signal) == len(df)

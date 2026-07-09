@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import pandas as pd
 
@@ -6,7 +6,6 @@ from jemba_core.ai.trainer.pipeline import TrainingPipeline
 
 
 class ModelTrainer:
-
     def __init__(self, model):
 
         self.model = model

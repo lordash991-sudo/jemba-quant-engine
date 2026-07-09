@@ -1,4 +1,4 @@
-﻿from jemba_core.backtest.trade import Trade
+from jemba_core.backtest.trade import Trade
 from jemba_core.montecarlo.engine import MonteCarloEngine
 
 

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import numpy as np
 import pandas as pd
@@ -31,9 +31,7 @@ class FeatureSelector:
     def remove_correlated_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         corr = df.corr(numeric_only=True).abs()
 
-        upper = corr.where(
-            np.triu(np.ones(corr.shape), k=1).astype(bool)
-        )
+        upper = corr.where(np.triu(np.ones(corr.shape), k=1).astype(bool))
 
         drop = [
             column

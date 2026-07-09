@@ -1,8 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 
 class ModelRegistry:
-
     def __init__(self):
         self._models = {}
 

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 
@@ -16,7 +16,6 @@ class DatasetSplit:
 
 
 class DatasetSplitter:
-
     def __init__(
         self,
         target_column: str = "target",
@@ -30,9 +29,7 @@ class DatasetSplitter:
     def split(self, df: pd.DataFrame) -> DatasetSplit:
 
         if self.target_column not in df.columns:
-            raise ValueError(
-                f"Target column '{self.target_column}' not found."
-            )
+            raise ValueError(f"Target column '{self.target_column}' not found.")
 
         n = len(df)
 

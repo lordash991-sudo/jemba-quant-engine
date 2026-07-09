@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import pandas as pd
 
@@ -14,9 +14,7 @@ class LabelGenerator:
             raise ValueError("Missing 'close' column")
 
         data["future_close"] = data["close"].shift(-self.horizon)
-        data["future_return"] = (
-            data["future_close"] - data["close"]
-        ) / data["close"]
+        data["future_return"] = (data["future_close"] - data["close"]) / data["close"]
 
         data["target"] = (data["future_return"] > 0).astype(int)
         data["label"] = data["target"]

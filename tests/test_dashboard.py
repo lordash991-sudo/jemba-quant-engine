@@ -1,4 +1,4 @@
-﻿from jemba_core.dashboard.formatter import DashboardFormatter
+from jemba_core.dashboard.formatter import DashboardFormatter
 from jemba_core.dashboard.service import DashboardService
 
 

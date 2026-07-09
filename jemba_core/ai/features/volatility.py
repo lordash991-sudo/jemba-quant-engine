@@ -24,21 +24,11 @@ class VolatilityFeatures:
             axis=1,
         ).max(axis=1)
 
-        data["atr_14"] = (
-            data["true_range"]
-            .rolling(14)
-            .mean()
-        )
+        data["atr_14"] = data["true_range"].rolling(14).mean()
 
-        data["atr_pct"] = (
-            data["atr_14"]
-            / close
-        )
+        data["atr_pct"] = data["atr_14"] / close
 
-        data["range_pct"] = (
-            (high - low)
-            / close
-        )
+        data["range_pct"] = (high - low) / close
 
         body = (close - open_).abs()
 
@@ -55,16 +45,8 @@ class VolatilityFeatures:
 
         data["rolling_std_20"] = returns.rolling(20).std()
 
-        data["historical_vol_20"] = (
-            data["rolling_std_20"]
-            * np.sqrt(252)
-        )
+        data["historical_vol_20"] = data["rolling_std_20"] * np.sqrt(252)
 
-        data["realized_vol_20"] = (
-            returns.pow(2)
-            .rolling(20)
-            .sum()
-            .pow(0.5)
-        )
+        data["realized_vol_20"] = returns.pow(2).rolling(20).sum().pow(0.5)
 
         return data

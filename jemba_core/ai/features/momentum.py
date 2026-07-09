@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import pandas as pd
 
@@ -54,15 +54,8 @@ class MomentumFeatures:
 
         data["macd"] = ema12 - ema26
 
-        data["macd_signal"] = (
-            data["macd"]
-            .ewm(span=9, adjust=False)
-            .mean()
-        )
+        data["macd_signal"] = data["macd"].ewm(span=9, adjust=False).mean()
 
-        data["macd_histogram"] = (
-            data["macd"]
-            - data["macd_signal"]
-        )
+        data["macd_histogram"] = data["macd"] - data["macd_signal"]
 
         return data

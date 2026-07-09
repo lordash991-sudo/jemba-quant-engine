@@ -1,4 +1,4 @@
-﻿from jemba_core.dashboard.models import DashboardSnapshot
+from jemba_core.dashboard.models import DashboardSnapshot
 
 
 class DashboardFormatter:
