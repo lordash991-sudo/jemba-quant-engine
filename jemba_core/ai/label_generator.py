@@ -19,8 +19,12 @@ class LabelGenerator:
         ) / data["close"]
 
         data["target"] = (data["future_return"] > 0).astype(int)
+        data["label"] = data["target"]
 
         return data.dropna(subset=["future_close", "future_return"])
+
+    def transform_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
+        return self.transform(df)
 
     def generate(self, df: pd.DataFrame) -> pd.DataFrame:
         return self.transform(df)
