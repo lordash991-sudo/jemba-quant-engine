@@ -1,36 +1,44 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
+from statistics import mean
 
 
-@dataclass(slots=True)
+@dataclass
 class ConfidenceResult:
-    confidence: float
-    probability: float
-    prediction: int
+    signal: str = "NO_TRADE"
+    confidence: float = 0.0
+    probability: float = 0.0
+    prediction: str = "NO_TRADE"
+    should_trade: bool = False
 
 
 class ConfidenceEngine:
-    def __init__(self, min_probability: float = 0.55):
-        self.min_probability = min_probability
+    def __init__(self, threshold: float = 0.65):
+        self.threshold = threshold
 
-    def calculate(self, prediction: int, probability: float) -> ConfidenceResult:
-        probability = float(probability)
+    def calculate(
+        self,
+        probabilities: list[float],
+        signal: str = "BUY",
+    ) -> ConfidenceResult:
+        if not probabilities:
+            return ConfidenceResult()
 
-        if probability < self.min_probability:
-            confidence = 0.0
-        else:
-            confidence = (
-                (probability - self.min_probability) / (1 - self.min_probability)
-            ) * 100
-
-        confidence = max(0.0, min(100.0, confidence))
+        probability = float(mean(probabilities))
+        final_signal = signal if probability >= self.threshold else "NO_TRADE"
 
         return ConfidenceResult(
-            confidence=confidence,
+            signal=final_signal,
+            confidence=probability,
             probability=probability,
-            prediction=prediction,
+            prediction=final_signal,
+            should_trade=probability >= self.threshold,
         )
 
-    def evaluate(self, data):
-        return data
+    def evaluate(
+        self,
+        probabilities: list[float],
+        signal: str = "BUY",
+    ) -> ConfidenceResult:
+        return self.calculate(probabilities, signal)
