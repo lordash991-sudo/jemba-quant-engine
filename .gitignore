@@ -17,3 +17,4 @@ htmlcov/
 coverage.xml
 
 database/*.db
+tmp_smoke_registry/
