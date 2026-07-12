@@ -1,38 +1,37 @@
 from __future__ import annotations
 
-import joblib
-import pandas as pd
+from typing import Any
+
+from jemba_core.ai.inference.feature_validator import FeatureValidator
+from jemba_core.ai.inference.inference_service import InferenceService
+from jemba_core.ai.inference.prediction_result import PredictionResult
 
 
 class PredictorEngine:
-    def __init__(self, model=None):
-        self.model = model
+    """
+    High level prediction engine.
 
-    def load(self, path):
-        self.model = joblib.load(path)
-        return self.model
+    Responsibilities:
 
-    def predict(self, df: pd.DataFrame):
-        if self.model is None:
-            return df
+    - Validate incoming features.
+    - Execute inference.
+    - Return PredictionResult.
+    """
 
-        features = df.select_dtypes(include="number").fillna(0)
+    def __init__(
+        self,
+        inference_service: InferenceService,
+        validator: FeatureValidator,
+    ) -> None:
 
-        prediction = self.model.predict(features)
-        probability = pd.DataFrame(self.model.predict_proba(features))
+        self._service = inference_service
+        self._validator = validator
 
-        result = df.copy()
+    def predict(
+        self,
+        features: Any,
+    ) -> PredictionResult:
 
-        result["prediction"] = prediction
-        result["probability_short"] = probability.iloc[:, 0].values
-        result["probability_long"] = probability.iloc[:, 1].values
+        validated = self._validator.validate(features)
 
-        return result
-
-    def latest(self, df):
-        result = self.predict(df)
-
-        if result.empty:
-            return None
-
-        return result.iloc[-1].to_dict()
+        return self._service.predict(validated)

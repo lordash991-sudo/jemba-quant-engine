@@ -1,68 +1,125 @@
-from unittest.mock import MagicMock
+from __future__ import annotations
 
-import pandas as pd
+from unittest.mock import Mock
 
+import numpy as np
+import pytest
+
+from jemba_core.ai.inference.prediction_result import PredictionResult
 from jemba_core.ai.predictor_engine import PredictorEngine
 
 
-def dataframe():
-
-    return pd.DataFrame(
-        {
-            "ema_20": [1, 2, 3],
-            "ema_50": [2, 3, 4],
-            "atr_14": [1.1, 1.2, 1.3],
-            "rsi_14": [40, 55, 70],
-        }
+def make_result() -> PredictionResult:
+    return PredictionResult(
+        signal=1,
+        probability=0.91,
+        confidence=0.91,
+        model_id="MODEL-001",
+        model_name="RandomForest",
+        status="production",
+        quality_score=88.5,
+        metrics={"profit_factor": 2.4},
+        metadata={"symbol": "BTCUSDT"},
     )
 
 
-def test_without_model():
+def test_predict_validates_features_and_calls_service():
+    validator = Mock()
+    service = Mock()
 
-    engine = PredictorEngine()
+    validated = np.array([[1.0, 2.0]])
+    expected = make_result()
 
-    result = engine.predict(dataframe())
+    validator.validate.return_value = validated
+    service.predict.return_value = expected
 
-    assert len(result.columns) == 4
+    engine = PredictorEngine(
+        inference_service=service,
+        validator=validator,
+    )
 
+    raw_features = [[1.0, 2.0]]
+    result = engine.predict(raw_features)
 
-def test_prediction():
+    validator.validate.assert_called_once_with(raw_features)
+    service.predict.assert_called_once_with(validated)
 
-    model = MagicMock()
-
-    model.predict.return_value = [1, 0, 1]
-
-    model.predict_proba.return_value = [
-        [0.20, 0.80],
-        [0.70, 0.30],
-        [0.10, 0.90],
-    ]
-
-    engine = PredictorEngine(model)
-
-    result = engine.predict(dataframe())
-
-    assert "prediction" in result.columns
-    assert "probability_long" in result.columns
-    assert "probability_short" in result.columns
-
-    assert result.iloc[-1]["prediction"] == 1
+    assert result is expected
 
 
-def test_latest():
+def test_returns_prediction_result():
+    validator = Mock()
+    service = Mock()
 
-    model = MagicMock()
+    validator.validate.return_value = np.array([[1.0, 2.0]])
+    service.predict.return_value = make_result()
 
-    model.predict.return_value = [1, 0, 1]
+    engine = PredictorEngine(
+        inference_service=service,
+        validator=validator,
+    )
 
-    model.predict_proba.return_value = [
-        [0.20, 0.80],
-        [0.70, 0.30],
-        [0.10, 0.90],
-    ]
+    result = engine.predict([[1.0, 2.0]])
 
-    engine = PredictorEngine(model)
+    assert isinstance(result, PredictionResult)
+    assert result.signal == 1
+    assert result.probability == 0.91
+    assert result.model_name == "RandomForest"
 
-    latest = engine.latest(dataframe())
 
-    assert latest["prediction"] == 1
+def test_propagates_validator_error():
+    validator = Mock()
+    service = Mock()
+
+    validator.validate.side_effect = ValueError("FEATURES_CONTAIN_NAN")
+
+    engine = PredictorEngine(
+        inference_service=service,
+        validator=validator,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="FEATURES_CONTAIN_NAN",
+    ):
+        engine.predict([[1.0, np.nan]])
+
+    service.predict.assert_not_called()
+
+
+def test_propagates_inference_error():
+    validator = Mock()
+    service = Mock()
+
+    validator.validate.return_value = np.array([[1.0, 2.0]])
+    service.predict.side_effect = LookupError("NO_PRODUCTION_MODEL")
+
+    engine = PredictorEngine(
+        inference_service=service,
+        validator=validator,
+    )
+
+    with pytest.raises(
+        LookupError,
+        match="NO_PRODUCTION_MODEL",
+    ):
+        engine.predict([[1.0, 2.0]])
+
+
+def test_accepts_numpy_array():
+    validator = Mock()
+    service = Mock()
+
+    features = np.array([[1.0, 2.0]])
+    validator.validate.return_value = features
+    service.predict.return_value = make_result()
+
+    engine = PredictorEngine(
+        inference_service=service,
+        validator=validator,
+    )
+
+    result = engine.predict(features)
+
+    assert result.signal == 1
+    validator.validate.assert_called_once_with(features)
