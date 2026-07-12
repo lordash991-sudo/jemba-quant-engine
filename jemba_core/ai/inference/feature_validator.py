@@ -78,7 +78,7 @@ class FeatureValidator:
                     f"received={received_columns}"
                 )
 
-        return self.validate(frame)
+        return self.validate(frame.to_numpy())
 
     def _to_array(
         self,
