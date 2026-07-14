@@ -6,7 +6,6 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from jemba_core.quant.calmar import calmar_ratio
 from jemba_core.quant.drawdown import (
     average_drawdown,
     max_drawdown,
@@ -24,10 +23,6 @@ from jemba_core.quant.profit_factor import (
     gross_profit,
     profit_factor,
 )
-from jemba_core.quant.recovery_factor import recovery_factor
-from jemba_core.quant.sharpe import sharpe_ratio
-from jemba_core.quant.sortino import sortino_ratio
-from jemba_core.quant.sqn import sqn
 
 
 @dataclass(slots=True)
@@ -159,26 +154,6 @@ class TradingResult:
     def average_drawdown(self) -> float:
         return average_drawdown(self.equity_curve)
 
-    @property
-    def sharpe(self) -> float:
-        return sharpe_ratio(self.returns)
-
-    @property
-    def sortino(self) -> float:
-        return sortino_ratio(self.returns)
-
-    @property
-    def calmar(self) -> float:
-        return calmar_ratio(self.equity_curve)
-
-    @property
-    def recovery_factor(self) -> float:
-        return recovery_factor(self.equity_curve)
-
-    @property
-    def sqn(self) -> float:
-        return sqn(self.trades)
-
     def to_dict(self) -> dict[str, Any]:
         return {
             "number_of_trades": self.number_of_trades,
@@ -198,11 +173,6 @@ class TradingResult:
             "expectancy": self.expectancy,
             "payoff_ratio": self.payoff_ratio,
             "max_drawdown": self.max_drawdown,
-            "sharpe": self.sharpe,
-            "sortino": self.sortino,
-            "calmar": self.calmar,
-            "recovery_factor": self.recovery_factor,
-            "sqn": self.sqn,
             "average_drawdown": (self.average_drawdown),
             "equity_curve": (self.equity_curve.tolist()),
             "returns": self.returns.tolist(),
