@@ -63,24 +63,3 @@ def test_exposes_advanced_risk_metrics():
     assert "calmar" in data
     assert "recovery_factor" in data
     assert "sqn" in data
-
-
-def test_exposes_advanced_risk_metrics():
-    result = TradingResult.from_trades(
-        [100.0, -40.0, 80.0, -20.0],
-        initial_equity=1000.0,
-    )
-
-    assert isinstance(result.sharpe, float)
-    assert isinstance(result.sortino, float)
-    assert isinstance(result.calmar, float)
-    assert isinstance(result.recovery_factor, float)
-    assert isinstance(result.sqn, float)
-
-    data = result.to_dict()
-
-    assert "sharpe" in data
-    assert "sortino" in data
-    assert "calmar" in data
-    assert "recovery_factor" in data
-    assert "sqn" in data
