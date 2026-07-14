@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 from jemba_core.ai.predictor_engine import PredictorEngine
 from jemba_core.features.feature_engine import FeatureEngine
 
@@ -5,15 +9,15 @@ from jemba_core.features.feature_engine import FeatureEngine
 class PipelineEngine:
     def __init__(
         self,
-        feature_engine=None,
-        predictor=None,
-        confidence_engine=None,
-        signal_engine=None,
-        ranking_engine=None,
-        risk_engine=None,
-        portfolio_manager=None,
-        execution_engine=None,
-    ):
+        feature_engine: Any | None = None,
+        predictor: Any | None = None,
+        confidence_engine: Any | None = None,
+        signal_engine: Any | None = None,
+        ranking_engine: Any | None = None,
+        risk_engine: Any | None = None,
+        portfolio_manager: Any | None = None,
+        execution_engine: Any | None = None,
+    ) -> None:
         self.feature_engine = feature_engine or FeatureEngine()
         self.predictor = predictor or PredictorEngine()
         self.confidence_engine = confidence_engine
@@ -23,31 +27,49 @@ class PipelineEngine:
         self.portfolio_manager = portfolio_manager
         self.execution_engine = execution_engine
 
-    def execute(self, market=None):
+    def execute(
+        self,
+        market: Any | None = None,
+    ) -> Any:
         data = market
 
-        if self.feature_engine:
+        if self.feature_engine is not None:
             data = self.feature_engine.build(data)
 
-        if self.predictor:
+        if self._predictor_is_ready():
             data = self.predictor.predict(data)
 
-        if self.confidence_engine:
+        if self.confidence_engine is not None:
             data = self.confidence_engine.evaluate(data)
 
-        if self.signal_engine:
+        if self.signal_engine is not None:
             data = self.signal_engine.generate(data)
 
-        if self.ranking_engine:
+        if self.ranking_engine is not None:
             data = self.ranking_engine.rank(data)
 
-        if self.risk_engine:
+        if self.risk_engine is not None:
             data = self.risk_engine.apply(data)
 
-        if self.portfolio_manager:
+        if self.portfolio_manager is not None:
             data = self.portfolio_manager.update(data)
 
-        if self.execution_engine:
+        if self.execution_engine is not None:
             data = self.execution_engine.execute(data)
 
         return data
+
+    def _predictor_is_ready(self) -> bool:
+        if self.predictor is None:
+            return False
+
+        is_configured = getattr(
+            self.predictor,
+            "is_configured",
+            None,
+        )
+
+        if is_configured is None:
+            return True
+
+        return bool(is_configured)
