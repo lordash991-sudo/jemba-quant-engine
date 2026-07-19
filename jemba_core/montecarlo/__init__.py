@@ -23,3 +23,24 @@ __all__ = [
     "percentile",
     "standard_deviation",
 ]
+
+# JEMBA MONTE CARLO ENGINE EXPORTS
+from jemba_core.montecarlo.monte_carlo_engine import (
+    MonteCarloConfig,
+    MonteCarloEngine,
+    SamplingMode,
+    SimulationPath,
+)
+from jemba_core.montecarlo.monte_carlo_engine import (
+    MonteCarloResult as AdvancedMonteCarloResult,
+)
+
+__all__ = globals().get("__all__", [])
+
+__all__ += [
+    "MonteCarloConfig",
+    "MonteCarloEngine",
+    "AdvancedMonteCarloResult",
+    "SamplingMode",
+    "SimulationPath",
+]
