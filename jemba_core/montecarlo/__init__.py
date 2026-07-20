@@ -25,6 +25,12 @@ __all__ = [
 ]
 
 # JEMBA MONTE CARLO ENGINE EXPORTS
+# JEMBA DRAWDOWN ANALYZER EXPORTS
+from jemba_core.montecarlo.drawdown_analyzer import (
+    DrawdownAnalyzer,
+    DrawdownEpisode,
+    DrawdownStats,
+)
 from jemba_core.montecarlo.monte_carlo_engine import (
     MonteCarloConfig,
     MonteCarloEngine,
@@ -38,6 +44,9 @@ from jemba_core.montecarlo.monte_carlo_engine import (
 __all__ = globals().get("__all__", [])
 
 __all__ += [
+    "DrawdownAnalyzer",
+    "DrawdownEpisode",
+    "DrawdownStats",
     "MonteCarloConfig",
     "MonteCarloEngine",
     "AdvancedMonteCarloResult",
