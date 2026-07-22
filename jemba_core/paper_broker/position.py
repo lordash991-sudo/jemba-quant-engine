@@ -11,6 +11,9 @@ from jemba_core.paper_broker.models import (
     PositionStatus,
 )
 
+_PRICE_REL_TOLERANCE = 1e-12
+_PRICE_ABS_TOLERANCE = 1e-12
+
 
 @dataclass(slots=True)
 class PaperPosition:
@@ -33,8 +36,14 @@ class PaperPosition:
         default=PositionStatus.OPEN,
     )
 
-    realized_pnl: float = field(init=False, default=0.0)
-    close_commission: float = field(init=False, default=0.0)
+    realized_pnl: float = field(
+        init=False,
+        default=0.0,
+    )
+    close_commission: float = field(
+        init=False,
+        default=0.0,
+    )
 
     opened_at: datetime = field(
         init=False,
@@ -116,17 +125,29 @@ class PaperPosition:
         )
 
         if self.side is PositionSide.LONG:
-            if self.current_price <= self.stop_loss:
+            if _price_at_or_below(
+                self.current_price,
+                self.stop_loss,
+            ):
                 return CloseReason.STOP_LOSS
 
-            if self.current_price >= self.take_profit:
+            if _price_at_or_above(
+                self.current_price,
+                self.take_profit,
+            ):
                 return CloseReason.TAKE_PROFIT
 
         else:
-            if self.current_price >= self.stop_loss:
+            if _price_at_or_above(
+                self.current_price,
+                self.stop_loss,
+            ):
                 return CloseReason.STOP_LOSS
 
-            if self.current_price <= self.take_profit:
+            if _price_at_or_below(
+                self.current_price,
+                self.take_profit,
+            ):
                 return CloseReason.TAKE_PROFIT
 
         return None
@@ -200,18 +221,56 @@ class PaperPosition:
 
     def _validate_price_structure(self) -> None:
         if self.side is PositionSide.LONG:
-            if self.stop_loss >= self.entry_price:
+            if _price_at_or_above(
+                self.stop_loss,
+                self.entry_price,
+            ):
                 raise ValueError("INVALID_LONG_STOP_LOSS")
 
-            if self.take_profit <= self.entry_price:
+            if _price_at_or_below(
+                self.take_profit,
+                self.entry_price,
+            ):
                 raise ValueError("INVALID_LONG_TAKE_PROFIT")
 
         else:
-            if self.stop_loss <= self.entry_price:
+            if _price_at_or_below(
+                self.stop_loss,
+                self.entry_price,
+            ):
                 raise ValueError("INVALID_SHORT_STOP_LOSS")
 
-            if self.take_profit >= self.entry_price:
+            if _price_at_or_above(
+                self.take_profit,
+                self.entry_price,
+            ):
                 raise ValueError("INVALID_SHORT_TAKE_PROFIT")
+
+
+def _prices_equal(
+    first: float,
+    second: float,
+) -> bool:
+    return math.isclose(
+        first,
+        second,
+        rel_tol=_PRICE_REL_TOLERANCE,
+        abs_tol=_PRICE_ABS_TOLERANCE,
+    )
+
+
+def _price_at_or_above(
+    price: float,
+    level: float,
+) -> bool:
+    return price > level or _prices_equal(price, level)
+
+
+def _price_at_or_below(
+    price: float,
+    level: float,
+) -> bool:
+    return price < level or _prices_equal(price, level)
 
 
 def _positive_finite(

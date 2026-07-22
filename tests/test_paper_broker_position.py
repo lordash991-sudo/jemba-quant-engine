@@ -92,3 +92,20 @@ def test_rejects_invalid_long_stop():
             stop_loss=101.0,
             take_profit=110.0,
         )
+
+
+def test_take_profit_accepts_floating_point_equivalent():
+    position = PaperPosition(
+        position_id="floating-tp",
+        symbol="BTCUSDT",
+        side=PositionSide.LONG,
+        entry_price=100.0,
+        quantity=1.0,
+        leverage=10,
+        stop_loss=95.0,
+        take_profit=100.0 * 1.10,
+    )
+
+    reason = position.update_price(110.0)
+
+    assert reason is CloseReason.TAKE_PROFIT
