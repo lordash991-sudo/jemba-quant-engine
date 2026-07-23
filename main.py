@@ -4,6 +4,7 @@ import sys
 import warnings
 
 from jemba_core.engine.scheduler import Scheduler
+from jemba_core.kernel.kernel import JembaKernel
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=ResourceWarning)
@@ -18,12 +19,32 @@ class QuantEngine:
     def __init__(self, mode="paper"):
         self.mode = mode
         self.scheduler = Scheduler()
-        self.running = True
+        self.kernel = JembaKernel()
+        self.running = False
+
+    def run_cycle(self):
+        """Ejecuta un ciclo completo del n?cleo JEMBA."""
+        if not self.running:
+            return False
+
+        logging.info("Ejecutando ciclo del motor...")
+
+        result = self.kernel.run(
+            cycles=1,
+            delay=0,
+        )
+
+        logging.info("Ciclo completado.")
+        return result
 
     def stop(self, *args):
         logging.info("Deteniendo motor...")
+
         self.running = False
-        sys.exit(0)
+        self.scheduler.stop()
+        self.kernel.stop()
+
+        logging.info("Motor detenido correctamente.")
 
     def start(self):
         logging.info("=" * 60)
@@ -36,7 +57,14 @@ class QuantEngine:
         else:
             logging.info("Modo PAPER activado. No se enviarán órdenes reales.")
 
-        self.scheduler.run()
+        self.running = True
+
+        try:
+            self.scheduler.run_forever(
+                self.run_cycle,
+            )
+        except KeyboardInterrupt:
+            self.stop()
 
 
 def main():
