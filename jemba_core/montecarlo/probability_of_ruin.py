@@ -1,4 +1,3 @@
-from math import log
 
 
 def probability_of_ruin(
