@@ -1,155 +1,125 @@
-import time
+﻿from __future__ import annotations
 
-from jemba_core.engine.quant_orchestrator import QuantOrchestrator
-from jemba_core.events.event_bus import EventBus
-from jemba_core.events.prediction_event import PredictionEvent
-from jemba_core.events.risk_event import RiskEvent
-from jemba_core.events.trade_signal_event import TradeSignalEvent
+import logging
+import time
+from typing import Any
+
+from jemba_core.ai.confidence_engine import ConfidenceEngine
+from jemba_core.ai.predictor_engine import PredictorEngine
 from jemba_core.execution.trade_engine import TradeEngine
+from jemba_core.features.feature_engine import FeatureEngine
 from jemba_core.portfolio.portfolio_manager import PortfolioManager
 from jemba_core.risk.risk_engine import RiskEngine
+from jemba_core.signals.signal_engine import SignalEngine
+from jemba_core.signals.signal_ranker import SignalRanker
+
+
+logger = logging.getLogger(__name__)
 
 
 class LiveEngine:
-    def __init__(self):
-        self.event_bus = EventBus()
-
-        self.symbols = [
+    def __init__(
+        self,
+        symbols: list[str] | None = None,
+        timeframe: str = "1h",
+        account_balance: float = 10000.0,
+        risk_per_trade: float = 0.01,
+        max_positions: int = 1,
+        min_confidence: float = 0.70,
+        interval_seconds: int = 60,
+    ) -> None:
+        self.symbols = symbols or [
             "BTC-USDT",
             "ETH-USDT",
             "SOL-USDT",
-            "DOGE-USDT",
-            "LINK-USDT",
-            "XRP-USDT",
-            "SUI-USDT",
-            "PEPE-USDT",
-            "BNB-USDT",
-            "LTC-USDT",
-            "ADA-USDT",
-            "AVAX-USDT",
-            "AAVE-USDT",
         ]
 
+        self.timeframe = timeframe
+        self.interval_seconds = int(interval_seconds)
+        self.running = False
+
+        self.feature_engine = FeatureEngine()
+        self.predictor_engine = PredictorEngine()
+        self.confidence_engine = ConfidenceEngine()
+        self.signal_engine = SignalEngine()
+        self.ranking_engine = SignalRanker()
+
+        self.risk_engine = RiskEngine(
+            max_risk_per_trade=risk_per_trade,
+            min_confidence=min_confidence,
+            max_open_positions=max_positions,
+        )
+
         self.portfolio = PortfolioManager(
-            account_balance=10000,
-            risk_per_trade=0.01,
+            account_balance=account_balance,
+            risk_per_trade=risk_per_trade,
+            max_positions=max_positions,
         )
 
-        self.trade_engine = TradeEngine(self.portfolio)
-        self.risk_engine = RiskEngine()
-
-        self.quant = QuantOrchestrator(
-            account_balance=10000,
-            min_confidence=0.70,
+        self.trade_engine = TradeEngine(
+            feature_engine=self.feature_engine,
+            predictor_engine=self.predictor_engine,
+            confidence_engine=self.confidence_engine,
+            signal_engine=self.signal_engine,
+            ranking_engine=self.ranking_engine,
+            risk_engine=self.risk_engine,
+            portfolio_manager=self.portfolio,
         )
 
-    def cycle(self):
-        best = self.quant.best_opportunity(self.symbols)
+    def start(self) -> None:
+        self.running = True
 
-        if best is None:
-            print("No hay señales.")
-            return None
-
-        print()
-        print("=" * 60)
-        print("MEJOR ACTIVO")
-        print(best)
-
-        action = best.get("action", "HOLD")
-        symbol = best.get("symbol", "UNKNOWN")
-        timeframe = best.get("timeframe", "1h")
-        confidence = float(best.get("confidence", 0.0))
-        buy_probability = float(best.get("buy_probability", 0.0))
-        sell_probability = float(best.get("sell_probability", 0.0))
-
-        prediction_event = PredictionEvent(
-            source="LiveEngine",
-            symbol=symbol,
-            timeframe=timeframe,
-            action=action,
-            confidence=confidence,
-            probability=max(buy_probability, sell_probability),
-            model="RandomForest",
-            metadata={
-                "buy_probability": buy_probability,
-                "sell_probability": sell_probability,
-                "raw": best,
-            },
+        logger.info("LiveEngine iniciado en modo seguro.")
+        logger.info(
+            "Símbolos: %s | Timeframe: %s",
+            self.symbols,
+            self.timeframe,
         )
 
-        self.event_bus.publish(prediction_event)
+        while self.running:
+            self.run_cycle()
+            time.sleep(self.interval_seconds)
 
-        validation = self.risk_engine.validate(
-            portfolio=self.portfolio,
-            confidence=confidence,
-            position_size=1,
-            has_open_position=not self.trade_engine.can_open_trade(),
-        )
+    def stop(self) -> None:
+        self.running = False
+        logger.info("LiveEngine detenido.")
 
-        print()
-        print("RIESGO")
-        print(validation)
+    def run_cycle(self) -> list[Any]:
+        results: list[Any] = []
 
-        risk_event = RiskEvent(
-            source="LiveEngine",
-            approved=bool(validation.get("approved", False)),
-            reason=",".join(validation.get("reasons", [])),
-            risk_percent=float(self.portfolio.risk_per_trade),
-            drawdown=0.0,
-            consecutive_losses=0,
-            metadata=validation,
-        )
+        for symbol in self.symbols:
+            try:
+                result = self.trade_engine.process(
+                    symbol=symbol,
+                    timeframe=self.timeframe,
+                )
 
-        self.event_bus.publish(risk_event)
+                if result is not None:
+                    results.append(result)
 
-        if not validation.get("approved", False):
-            print()
-            print("OPERACION BLOQUEADA")
-            return {
-                "prediction": prediction_event,
-                "risk": risk_event,
-                "trade_signal": None,
-            }
+            except RuntimeError as exc:
+                if str(exc) == "PREDICTOR_ENGINE_NOT_CONFIGURED":
+                    logger.warning(
+                        "Predictor no configurado. "
+                        "No se generan señales para %s.",
+                        symbol,
+                    )
+                    continue
 
-        if action not in ["BUY", "SELL"]:
-            print()
-            print("SIN OPERACION: accion HOLD")
-            return {
-                "prediction": prediction_event,
-                "risk": risk_event,
-                "trade_signal": None,
-            }
+                raise
 
-        trade_signal = TradeSignalEvent(
-            source="LiveEngine",
-            symbol=symbol,
-            timeframe=timeframe,
-            side=action,
-            entry=float(best.get("entry", best.get("price", best.get("close", 0.0)))),
-            stop_loss=float(best.get("stop_loss", best.get("sl", 0.0))),
-            take_profit=float(best.get("take_profit", best.get("tp", 0.0))),
-            confidence=confidence,
-            strategy="JEMBA_AI_V1",
-            metadata=best,
-        )
+        return results
 
-        self.event_bus.publish(trade_signal)
-
-        print()
-        print("TRADE SIGNAL PUBLICADO")
-        print(vars(trade_signal))
-
+    def summary(self) -> dict[str, Any]:
         return {
-            "prediction": prediction_event,
-            "risk": risk_event,
-            "trade_signal": trade_signal,
+            "running": self.running,
+            "symbols": list(self.symbols),
+            "timeframe": self.timeframe,
+            "interval_seconds": self.interval_seconds,
+            "portfolio": self.portfolio.summary(),
+            "predictor_configured": getattr(
+                self.predictor_engine,
+                "is_configured",
+                False,
+            ),
         }
-
-    def run(self):
-        while True:
-            self.cycle()
-
-            print()
-            print("Esperando siguiente ciclo...")
-
-            time.sleep(60)
