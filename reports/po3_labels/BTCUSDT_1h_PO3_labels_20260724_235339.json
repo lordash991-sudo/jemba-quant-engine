@@ -1,0 +1,30 @@
+{
+  "created_at": "2026-07-24T23:53:39.614983+00:00",
+  "symbol": "BTCUSDT",
+  "timeframe": "1h",
+  "source_csv": "C:\\Users\\Jemba\\Downloads\\BTC_USDT_1h_futures_3y.csv",
+  "feature_engine": "PO3FeatureEngineV2",
+  "label_generator": "PO3LabelGeneratorV1",
+  "label_config": {
+    "horizon_bars": 24,
+    "stop_atr": 1.0,
+    "target_atr": 2.0,
+    "entry_mode": "close",
+    "ambiguous_policy": "stop_first"
+  },
+  "market_rows": 18314,
+  "feature_rows": 18314,
+  "total_signals": 202,
+  "take_profit": 69,
+  "stop_loss": 124,
+  "expired": 9,
+  "ambiguous_hits": 1,
+  "label_counts": {
+    "STOP_LOSS": 124,
+    "TAKE_PROFIT": 69,
+    "EXPIRED": 9
+  },
+  "win_rate_without_expired": 0.35751295336787564,
+  "mean_r_multiple": 0.09630154167779852,
+  "dataset_path": "C:\\Users\\Jemba\\OneDrive\\Escritorio\\JEMBA QUANT ENGINE\\data\\processed\\po3\\BTCUSDT_1h_PO3_V2_20260724_235339.csv"
+}

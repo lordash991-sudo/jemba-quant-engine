@@ -1,0 +1,123 @@
+{
+  "created_at": "2026-07-24T07:48:40.804138+00:00",
+  "trained_root": "models\\trained",
+  "artifact_root": "models\\artifacts",
+  "registry_path": "models\\registry\\registry.json",
+  "production_symbol": "BTCUSDT",
+  "registered": [
+    {
+      "symbol": "AAVEUSDT",
+      "model_id": "MODEL-20260724074740-8B252EF5",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074740-8B252EF5.joblib",
+      "source": "models\\trained\\AAVEUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "ADAUSDT",
+      "model_id": "MODEL-20260724074744-AF0B7EA3",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074744-AF0B7EA3.joblib",
+      "source": "models\\trained\\ADAUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "AVAXUSDT",
+      "model_id": "MODEL-20260724074748-BEFBBC9F",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074748-BEFBBC9F.joblib",
+      "source": "models\\trained\\AVAXUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "BNBUSDT",
+      "model_id": "MODEL-20260724074753-DDAD7181",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074753-DDAD7181.joblib",
+      "source": "models\\trained\\BNBUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "BTCUSDT",
+      "model_id": "MODEL-20260724074758-9341B230",
+      "model_name": "RandomForestClassifier",
+      "status": "production",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074758-9341B230.joblib",
+      "source": "models\\trained\\BTCUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "model_id": "MODEL-20260724074802-9178D8DD",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074802-9178D8DD.joblib",
+      "source": "models\\trained\\DOGEUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "model_id": "MODEL-20260724074807-58A6B873",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074807-58A6B873.joblib",
+      "source": "models\\trained\\ETHUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "LINKUSDT",
+      "model_id": "MODEL-20260724074812-9A8DE4A5",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074812-9A8DE4A5.joblib",
+      "source": "models\\trained\\LINKUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "LTCUSDT",
+      "model_id": "MODEL-20260724074817-03B87471",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074817-03B87471.joblib",
+      "source": "models\\trained\\LTCUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "PEPEUSDT",
+      "model_id": "MODEL-20260724074822-EF268BF3",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074822-EF268BF3.joblib",
+      "source": "models\\trained\\PEPEUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "RANDOMFOREST",
+      "model_id": "MODEL-20260724074826-AC539436",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074826-AC539436.joblib",
+      "source": "models\\trained\\random_forest.pkl"
+    },
+    {
+      "symbol": "SOLUSDT",
+      "model_id": "MODEL-20260724074827-580F3EB8",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074827-580F3EB8.joblib",
+      "source": "models\\trained\\SOLUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "SUIUSDT",
+      "model_id": "MODEL-20260724074831-602995DA",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074831-602995DA.joblib",
+      "source": "models\\trained\\SUIUSDT_random_forest.pkl"
+    },
+    {
+      "symbol": "XRPUSDT",
+      "model_id": "MODEL-20260724074835-D021B3F5",
+      "model_name": "RandomForestClassifier",
+      "status": "candidate",
+      "artifact_path": "models\\artifacts\\randomforestclassifier\\MODEL-20260724074835-D021B3F5.joblib",
+      "source": "models\\trained\\XRPUSDT_random_forest.pkl"
+    }
+  ],
+  "skipped": [],
+  "failed": []
+}
