@@ -22,3 +22,7 @@ tmp_smoke_registry/
 # Training datasets
 data/
 
+
+models/experiments/
+
+reports/training/
